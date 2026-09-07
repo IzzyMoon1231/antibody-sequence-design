@@ -32,7 +32,7 @@ for residue in chain:
         "pdb_residue_number": residue.id[1]
     })
 
-# Assign heavy/light domain
+# Temporary heavy/light split
 for row in mapping:
     pos = row["sequence_position"]
 
@@ -41,12 +41,10 @@ for row in mapping:
     else:
         row["domain"] = "light"
 
-# Display sequence
 print("9NFU Chain C sequence:")
 print(sequence)
 print("\nSequence length:", len(sequence))
 
-# Save mapping
 output_file = "data/processed/9NFU_residue_mapping.csv"
 
 with open(output_file, "w", newline="") as csvfile:
