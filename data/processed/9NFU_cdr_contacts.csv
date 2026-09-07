@@ -1,0 +1,15 @@
+sequence_position,amino_acid,pdb_residue_number,domain,cdr,minimum_distance_A
+16,F,27,heavy,H1,4.73
+20,N,31,heavy,H1,3.38
+21,T,32,heavy,H1,4.8
+41,W,52,heavy,H2,3.13
+76,R,98,heavy,H3,3.51
+78,L,100,heavy,H3,2.94
+79,D,101,heavy,H3,3.66
+80,P,102,heavy,H3,3.14
+81,Y,103,heavy,H3,3.54
+83,L,105,heavy,H3,3.19
+84,Y,106,heavy,H3,2.99
+108,S,168,light,L1,4.36
+109,Y,169,light,L1,2.9
+127,R,187,light,L2,3.13
