@@ -1,0 +1,15 @@
+pdb_residue_number,sequence_position,mpnn_position,domain,cdr,original_AA,ProteinMPNN_AA,AbMPNN_AA,ProteinMPNN_changed,AbMPNN_changed,minimum_distance_A
+27,16,30,heavy,H1,F,L,F,True,False,4.73
+31,20,34,heavy,H1,N,N,S,False,True,3.38
+32,21,35,heavy,H1,T,R,S,True,True,4.8
+52,41,55,heavy,H2,W,W,Y,False,True,3.13
+98,76,101,heavy,H3,R,I,R,True,False,3.51
+100,78,103,heavy,H3,L,L,L,False,False,2.94
+101,79,104,heavy,H3,D,D,D,False,False,3.66
+102,80,105,heavy,H3,P,E,P,True,False,3.14
+103,81,106,heavy,H3,Y,F,Y,True,False,3.54
+105,83,108,heavy,H3,L,F,I,True,True,3.19
+106,84,109,heavy,H3,Y,Y,Y,False,False,2.99
+168,108,171,light,L1,S,E,D,True,True,4.36
+169,109,172,light,L1,Y,N,N,True,True,2.9
+187,127,190,light,L2,R,R,Y,False,True,3.13
