@@ -14,6 +14,7 @@ chain = structure[0]["C"]
 sequence = ""
 mapping = []
 
+# Build sequence and residue mapping
 for residue in chain:
     if residue.id[0] != " ":
         continue
@@ -31,26 +32,21 @@ for residue in chain:
         "pdb_residue_number": residue.id[1]
     })
 
+# Assign heavy/light domain
+for row in mapping:
+    pos = row["sequence_position"]
 
-# Print sequence
+    if pos <= 95:
+        row["domain"] = "heavy"
+    else:
+        row["domain"] = "light"
+
+# Display sequence
 print("9NFU Chain C sequence:")
 print(sequence)
-
 print("\nSequence length:", len(sequence))
 
-
-# Print complete mapping
-print("\nSequence-to-PDB mapping:")
-
-for row in mapping:
-    print(
-        f"Sequence {row['sequence_position']:3} | "
-        f"{row['amino_acid']} | "
-        f"PDB {row['pdb_residue_number']}"
-    )
-
-
-# Save mapping to CSV
+# Save mapping
 output_file = "data/processed/9NFU_residue_mapping.csv"
 
 with open(output_file, "w", newline="") as csvfile:
@@ -58,7 +54,8 @@ with open(output_file, "w", newline="") as csvfile:
     fieldnames = [
         "sequence_position",
         "amino_acid",
-        "pdb_residue_number"
+        "pdb_residue_number",
+        "domain"
     ]
 
     writer = csv.DictWriter(
@@ -68,6 +65,5 @@ with open(output_file, "w", newline="") as csvfile:
 
     writer.writeheader()
     writer.writerows(mapping)
-
 
 print(f"\nMapping saved to: {output_file}")
