@@ -1,1 +1,6 @@
-
+AbMPNN baseline on 9NFU:
+- Antigen chain A fixed
+- Antibody chain C framework fixed
+- 47 CDR positions designable
+- 23 CDR mutations generated
+- 0 framework mutations
