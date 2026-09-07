@@ -1,0 +1,16 @@
+antibody_chain,pdb_residue_number,amino_acid,antigen_chain,closest_antigen_residue,minimum_distance_A,cdr
+E,27,K,H,57,4.77,H1
+E,28,Y,B,298,4.03,H1
+E,30,N,B,298,3.36,H1
+E,31,L,B,298,3.86,H1
+E,99,S,H,45,4.73,H3
+E,100,V,B,40,4.06,H3
+E,101,V,H,45,3.95,H3
+E,102,D,B,38,4.3,H3
+E,103,S,B,38,4.22,H3
+E,105,G,H,19,4.1,H3
+E,106,V,H,38,3.29,H3
+E,107,G,H,42,2.7,H3
+E,108,F,H,45,2.77,H3
+E,109,Y,H,42,1.81,H3
+E,110,S,H,42,3.08,H3
