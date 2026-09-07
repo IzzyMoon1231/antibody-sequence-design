@@ -73,3 +73,61 @@ for residue_name, residue_number, distance in contact_residues:
         f"Chain C | {residue_name} {residue_number} | "
         f"minimum distance = {distance:.2f} Å"
     )
+import pandas as pd
+
+# Convert detected contacts into a dataframe
+contacts_df = pd.DataFrame(
+    contact_residues,
+    columns=[
+        "amino_acid_3letter",
+        "pdb_residue_number",
+        "minimum_distance_A"
+    ]
+)
+
+# Load sequence/PDB/CDR mapping
+mapping_df = pd.read_csv(
+    "data/processed/9NFU_residue_mapping.csv"
+)
+
+# Match structural contacts to their sequence and CDR positions
+results = mapping_df.merge(
+    contacts_df,
+    on="pdb_residue_number",
+    how="inner"
+)
+
+# Keep only contacts located within CDRs
+cdr_contacts = results[
+    results["cdr"] != "framework"
+].copy()
+
+# Save results
+output_file = "data/processed/9NFU_cdr_contacts.csv"
+
+cdr_contacts.to_csv(
+    output_file,
+    index=False
+)
+
+print("\n--------------------")
+print("CDR CONTACT SUMMARY")
+print("--------------------")
+
+print(
+    cdr_contacts[
+        [
+            "sequence_position",
+            "amino_acid",
+            "pdb_residue_number",
+            "domain",
+            "cdr",
+            "minimum_distance_A"
+        ]
+    ].to_string(index=False)
+)
+
+print()
+print(f"Total antibody contacts: {len(results)}")
+print(f"Total CDR contacts: {len(cdr_contacts)}")
+print(f"Saved to: {output_file}")
