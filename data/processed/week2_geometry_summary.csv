@@ -1,0 +1,5 @@
+structure,method,n_designs,mean_preservation_2A_pct,mean_preservation_3A_pct,mean_CA_displacement_A
+9NFU,baseline,100,59.71,75.21,5.31
+9NFU,ensemble,100,48.21,68.86,3.34
+9NH7,baseline,100,63.53,81.87,2.07
+9NH7,ensemble,100,41.93,53.2,4.65

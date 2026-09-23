@@ -1,0 +1,90 @@
+
+WEEK 2 — ANTIGEN-CONTACT CONSERVATION ANALYSIS
+
+Structures
+----------
+9NFU: scFv antibody-antigen complex
+9NH7: VHH antibody-antigen complex
+
+Dataset
+-------
+ProteinMPNN baseline: 100 ESMFold predictions per complex
+Ensemble: 100 ESMFold predictions per complex
+Total ESMFold structures analyzed: 400
+
+Week 1 contact residues
+-----------------------
+9NFU: 14 CDR antigen-contact residues
+9NH7: 15 CDR antigen-contact residues
+Working contact cutoff: 5.0 Å
+
+Mapping QC
+----------
+All Week 1 contact residues mapped successfully.
+Low-confidence/missing structural mappings: 0
+Missing ensemble sequence contacts: 0
+
+STRUCTURAL GEOMETRY RESULTS
+---------------------------
+Framework-aligned C-alpha contact-residue positional preservation:
+
+9NFU:
+ProteinMPNN baseline
+  2 Å preservation: 59.71%
+  3 Å preservation: 75.21%
+
+Ensemble
+  2 Å preservation: 48.21%
+  3 Å preservation: 68.86%
+
+3 Å difference (ensemble - baseline): -6.36 percentage points
+Mann-Whitney U p-value: 9.124e-12
+
+
+9NH7:
+ProteinMPNN baseline
+  2 Å preservation: 63.53%
+  3 Å preservation: 81.87%
+
+Ensemble
+  2 Å preservation: 41.93%
+  3 Å preservation: 53.20%
+
+3 Å difference (ensemble - baseline): -28.67 percentage points
+Mann-Whitney U p-value: 3.082e-14
+
+
+CONTACT SEQUENCE CONSERVATION
+-----------------------------
+9NFU:
+ProteinMPNN baseline: 65.50%
+Ensemble: 43.86%
+Difference (ensemble - baseline): -21.64 percentage points
+Mann-Whitney U p-value: 3.779e-33
+
+9NH7:
+ProteinMPNN baseline: 15.27%
+Ensemble: 22.00%
+Difference (ensemble - baseline): +6.73 percentage points
+Mann-Whitney U p-value: 2.608e-11
+
+
+ANTIBODY-FORMAT ABLATION
+------------------------
+A formal VHH-versus-scFv ablation was not performed because the
+available dataset contains only one experimental complex for each
+format (9NH7 VHH and 9NFU scFv).
+
+Although 100 designs were analyzed per method for each complex, these
+are repeated designs of the same underlying antibody-antigen systems,
+not independent VHH or scFv complexes. Therefore, differences between
+9NH7 and 9NFU cannot be attributed specifically to antibody format.
+
+
+INTERPRETATION NOTE
+-------------------
+The structural analysis measures framework-aligned C-alpha
+contact-residue positional preservation relative to the experimental
+complex. Because the ESMFold predictions do not contain the antigen,
+these results estimate preservation of original interface geometry
+and should not be interpreted as direct evidence of preserved binding.
