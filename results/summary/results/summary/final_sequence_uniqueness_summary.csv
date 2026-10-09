@@ -1,0 +1,5 @@
+structure,group,total_sequences,unique_sequences,duplicates
+9NH7,baseline,100,87,13
+9NH7,ensemble,100,76,24
+9NFU,baseline,100,100,0
+9NFU,ensemble,100,100,0

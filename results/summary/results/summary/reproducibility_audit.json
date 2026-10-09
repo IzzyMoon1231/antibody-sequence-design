@@ -1,0 +1,467 @@
+{
+  "project": "ProteinMPNN vs ProteinMPNN + AbLang",
+  "audit_type": "Existing evaluation output inventory",
+  "limitations": [
+    "Original ESMFold-predicted structures are not currently available.",
+    "Original pLDDT, RMSD, and contact evaluation code has not been recovered.",
+    "Existing results are preserved but full computational reproducibility is not yet established."
+  ],
+  "datasets": [
+    {
+      "file": "data/processed/9NFU_baseline_sequences.csv",
+      "rows": 3,
+      "columns": [
+        "model",
+        "sequence"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/9NFU_cdr_contacts.csv",
+      "rows": 14,
+      "columns": [
+        "sequence_position",
+        "amino_acid",
+        "pdb_residue_number",
+        "domain",
+        "cdr",
+        "minimum_distance_A"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/9NFU_contact_sequence_comparison.csv",
+      "rows": 14,
+      "columns": [
+        "pdb_residue_number",
+        "sequence_position",
+        "mpnn_position",
+        "domain",
+        "cdr",
+        "original_AA",
+        "ProteinMPNN_AA",
+        "AbMPNN_AA",
+        "ProteinMPNN_changed",
+        "AbMPNN_changed",
+        "minimum_distance_A"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/9NH7_baseline_sequences.csv",
+      "rows": 3,
+      "columns": [
+        "model",
+        "sequence"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/9NH7_cdr_contacts.csv",
+      "rows": 15,
+      "columns": [
+        "antibody_chain",
+        "pdb_residue_number",
+        "amino_acid",
+        "antigen_chain",
+        "closest_antigen_residue",
+        "minimum_distance_A",
+        "cdr"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_contact_geometry.csv",
+      "rows": 5800,
+      "columns": [
+        "structure",
+        "method",
+        "prediction",
+        "original_residue",
+        "predicted_position",
+        "ca_displacement_A",
+        "preserved_2A",
+        "preserved_3A",
+        "low_confidence_mapping"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_geometry_summary.csv",
+      "rows": 4,
+      "columns": [
+        "structure",
+        "method",
+        "n_designs",
+        "mean_preservation_2A_pct",
+        "mean_preservation_3A_pct",
+        "mean_CA_displacement_A"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_per_design_preservation.csv",
+      "rows": 400,
+      "columns": [
+        "structure",
+        "method",
+        "prediction",
+        "preservation_2A",
+        "preservation_3A",
+        "mean_displacement_A",
+        "median_displacement_A",
+        "preservation_2A_pct",
+        "preservation_3A_pct"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_sequence_conservation_baseline.csv",
+      "rows": 200,
+      "columns": [
+        "structure",
+        "method",
+        "design",
+        "conserved_contacts",
+        "total_contacts",
+        "contact_conservation_rate",
+        "contact_conservation_pct"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_sequence_conservation_ensemble.csv",
+      "rows": 200,
+      "columns": [
+        "structure",
+        "method",
+        "design",
+        "conserved_contacts",
+        "total_contacts",
+        "missing_contacts",
+        "contact_conservation_rate",
+        "contact_conservation_pct"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_sequence_conservation_stats.csv",
+      "rows": 2,
+      "columns": [
+        "structure",
+        "baseline_mean_pct",
+        "ensemble_mean_pct",
+        "difference_percentage_points",
+        "U_statistic",
+        "p_value"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "data/processed/week2_statistical_tests.csv",
+      "rows": 2,
+      "columns": [
+        "structure",
+        "baseline_mean_pct",
+        "ensemble_mean_pct",
+        "difference_percentage_points",
+        "U_statistic",
+        "p_value"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_CDR_pLDDT_results.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "overall_pLDDT",
+        "non_CDR_pLDDT",
+        "H1_pLDDT",
+        "H2_pLDDT",
+        "H3_pLDDT",
+        "L1_pLDDT",
+        "L2_pLDDT",
+        "L3_pLDDT"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_IMGT_residue_mapping.csv",
+      "rows": 45000,
+      "columns": [
+        "group",
+        "design_number",
+        "domain",
+        "imgt_position",
+        "sequence_index",
+        "amino_acid"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_RMSD_statistical_comparison.csv",
+      "rows": 7,
+      "columns": [
+        "region",
+        "baseline_mean",
+        "ensemble_mean",
+        "mean_difference",
+        "p_value",
+        "rank_biserial",
+        "FDR_adjusted_p",
+        "significant_FDR_0.05"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_domain_aligned_CDR_RMSD.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "H_framework_original_RMSD",
+        "H_framework_filtered_RMSD",
+        "H1_RMSD",
+        "H1_pairs",
+        "H1_original_alignment_RMSD",
+        "H2_RMSD",
+        "H2_pairs",
+        "H2_original_alignment_RMSD",
+        "H3_RMSD",
+        "H3_pairs",
+        "H3_original_alignment_RMSD",
+        "L_framework_original_RMSD",
+        "L1_RMSD",
+        "L1_pairs",
+        "L2_RMSD",
+        "L2_pairs",
+        "L3_RMSD",
+        "L3_pairs"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_domain_aligned_RMSD_statistics.csv",
+      "rows": 8,
+      "columns": [
+        "region",
+        "baseline_mean",
+        "ensemble_mean",
+        "difference",
+        "p_value",
+        "rank_biserial",
+        "FDR_adjusted_p",
+        "significant_FDR_0.05"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_domain_framework_RMSD.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "heavy_framework_RMSD",
+        "light_framework_RMSD",
+        "global_framework_RMSD",
+        "heavy_pairs",
+        "light_pairs"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_experimental_reference_RMSD.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "framework_alignment_pairs",
+        "framework_RMSD",
+        "framework_aligned_residues",
+        "H1_RMSD",
+        "H1_aligned_residues",
+        "H2_RMSD",
+        "H2_aligned_residues",
+        "H3_RMSD",
+        "H3_aligned_residues",
+        "L1_RMSD",
+        "L1_aligned_residues",
+        "L2_RMSD",
+        "L2_aligned_residues",
+        "L3_RMSD",
+        "L3_aligned_residues"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_heavy_framework_sensitivity.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "original_heavy_RMSD",
+        "filtered_heavy_RMSD",
+        "difference",
+        "original_pairs",
+        "filtered_pairs"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_overall_pLDDT.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "overall_pLDDT",
+        "median_pLDDT",
+        "min_pLDDT",
+        "max_pLDDT"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NFU/9NFU_pLDDT_statistical_comparison.csv",
+      "rows": 8,
+      "columns": [
+        "region",
+        "baseline_mean",
+        "ensemble_mean",
+        "mean_difference",
+        "p_value",
+        "rank_biserial",
+        "FDR_adjusted_p",
+        "significant_FDR_0.05"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NH7/9NH7_CDR_mapping_validation.csv",
+      "rows": 600,
+      "columns": [
+        "method",
+        "sequence_number",
+        "cdr",
+        "complete",
+        "continuous",
+        "start_position",
+        "end_position"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NH7/9NH7_FDR_corrected_statistics.csv",
+      "rows": 4,
+      "columns": [
+        "Region",
+        "p_value",
+        "adjusted_p_value",
+        "FDR_significant"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NH7/9NH7_IMGT_CDR_validation.csv",
+      "rows": 600,
+      "columns": [
+        "method",
+        "sequence_number",
+        "cdr",
+        "previous_sequence",
+        "imgt_sequence",
+        "matches",
+        "error"
+      ],
+      "missing_values": 600
+    },
+    {
+      "file": "results/9NH7/9NH7_baseline_unique_experimental_reference_RMSD.csv",
+      "rows": 87,
+      "columns": [
+        "sequence_number",
+        "pdb_file",
+        "framework_rmsd",
+        "H1_rmsd",
+        "H2_rmsd",
+        "H3_rmsd",
+        "sequence"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NH7/9NH7_ensemble_unique_RMSD_and_pLDDT.csv",
+      "rows": 76,
+      "columns": [
+        "sequence_number",
+        "pdb_file",
+        "framework_rmsd",
+        "H1_rmsd",
+        "H2_rmsd",
+        "H3_rmsd",
+        "overall_plddt",
+        "H1_plddt",
+        "H2_plddt",
+        "H3_plddt",
+        "H3_group",
+        "sequence"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NH7/9NH7_final_pLDDT_results.csv",
+      "rows": 200,
+      "columns": [
+        "group",
+        "design_number",
+        "sequence",
+        "overall_pLDDT",
+        "H1_pLDDT",
+        "H2_pLDDT",
+        "H3_pLDDT",
+        "non_CDR_pLDDT"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/9NH7/9NH7_unique_pLDDT_statistics.csv",
+      "rows": 5,
+      "columns": [
+        "metric",
+        "baseline_n",
+        "ensemble_n",
+        "baseline_mean",
+        "ensemble_mean",
+        "difference",
+        "p_value",
+        "rank_biserial",
+        "FDR_adjusted_p",
+        "significant_FDR_0.05"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/file_manifest.csv",
+      "rows": 18,
+      "columns": [
+        "group",
+        "filename",
+        "status"
+      ],
+      "missing_values": 0
+    },
+    {
+      "file": "results/summary/final_sequence_uniqueness_summary.csv",
+      "rows": 4,
+      "columns": [
+        "structure",
+        "group",
+        "total_sequences",
+        "unique_sequences",
+        "duplicates"
+      ],
+      "missing_values": 0
+    }
+  ]
+}

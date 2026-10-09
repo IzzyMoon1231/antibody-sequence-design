@@ -1,0 +1,24 @@
+{
+  "generated_utc": "2026-10-09T20:57:49.928088+00:00",
+  "sequences_analyzed": 400,
+  "pairwise_comparisons": 19800,
+  "positions_analyzed": 362,
+  "targets": [
+    "9NFU",
+    "9NH7"
+  ],
+  "methods": [
+    "baseline",
+    "ensemble"
+  ],
+  "gpu_required": false,
+  "sequence_analysis_complete": true,
+  "esmfold_structures_generated_by_this_step": 0,
+  "limitations": [
+    "Descriptive sequence comparisons only",
+    "No binding-affinity validation",
+    "No direct humanness assessment in this step",
+    "9NFU has 22 positions outside the IMGT mapping",
+    "ESMFold predictions remain pending"
+  ]
+}
