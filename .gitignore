@@ -1,1 +1,3 @@
 results_original_backup
+__pycache__/
+*.pyc
