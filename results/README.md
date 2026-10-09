@@ -26,8 +26,7 @@ within either structure.
 
 ### Predicted structural confidence
 
-ESMFold-predicted structures were sequence-verified against
-their corresponding FASTA records.
+The saved structural measurements were obtained from ESMFold predictions. However, the original predicted PDB files and complete prediction-input records are not archived, so sequence-level correspondence between every prediction and the finalized FASTA records cannot currently be independently verified.
 
 Mean pLDDT was calculated for each design and evaluated by region.
 Higher pLDDT indicates greater prediction confidence, not

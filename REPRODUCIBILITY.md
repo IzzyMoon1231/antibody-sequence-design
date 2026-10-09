@@ -166,6 +166,30 @@ and CDR regions rather than consistent improvement.
 7. Full regeneration of ensemble sequences may require
    access to the original AbLang model weights.
 
+
+## Sequence and Structural Provenance Audit
+
+- Both local reference PDB files (9NFU and 9NH7) were verified
+  byte-for-byte against the corresponding raw PDB files in
+  Sanithu's GitHub repository.
+- All 45,000 entries in the 9NFU IMGT residue-mapping CSV
+  match the finalized FASTA sequences using 0-based indexing.
+- The 9NFU heavy domain occupies indices 3-123 inclusive;
+  the light domain occupies indices 143-246 inclusive.
+- The finalized FASTA files are tracked in the repository.
+  Their original generation-code revision has not been
+  independently established.
+- Older generation manifests and the current generation script
+  specify different design-mask boundaries. This version
+  discrepancy remains unresolved.
+- Original ESMFold-predicted structures and complete
+  prediction-input records are unavailable. Consequently,
+  exact correspondence between every saved structural
+  measurement and finalized FASTA entry cannot currently
+  be independently verified.
+- Passing downstream statistical checks does not establish
+  end-to-end reproducibility or experimental binding activity.
+
 ## Overall Interpretation
 
 Adding AbLang to ProteinMPNN did not consistently improve
