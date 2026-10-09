@@ -1,0 +1,14 @@
+{
+  "purpose": "ESMFold pipeline development and CPU-only testing",
+  "packages": {
+    "torch": "2.11.0+cpu",
+    "transformers": "5.18.0",
+    "accelerate": "1.15.0",
+    "safetensors": "0.8.0",
+    "einops": "0.8.2",
+    "biopython": "NOT INSTALLED"
+  },
+  "gpu_inference_tested": false,
+  "model_weights_downloaded": false,
+  "note": "These are development versions, not a validated GPU environment."
+}
