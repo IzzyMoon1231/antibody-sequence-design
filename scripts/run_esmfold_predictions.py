@@ -29,11 +29,20 @@ def load_manifest(path):
 
 def check_prediction(path, sequence):
     path = Path(path)
+    marker = path.with_name(path.name + ".complete")
 
     if not path.is_file():
+        if marker.exists():
+            return "ORPHAN_COMPLETION_MARKER"
         return "MISSING"
 
+    if not marker.is_file():
+        return "INCOMPLETE_NO_MARKER"
+
     try:
+        if marker.read_text().strip() != "COMPLETE":
+            return "INVALID_COMPLETION_MARKER"
+
         observed = extract_pdb_sequence(path)
         status, _ = validate_sequence(sequence, observed)
         return status
@@ -163,7 +172,58 @@ def save_prediction(pdb_text, destination, sequence):
         if destination.exists():
             raise FileExistsError(destination)
 
-        os.link(temp_path, destination)
+        # Google Drive supports exclusive file creation, but not hard links.
+        # Never overwrite an existing prediction.
+        # A completion marker distinguishes finished files from interrupted copies.
+        import shutil
+
+        marker = destination.with_name(destination.name + ".complete")
+
+        if marker.exists():
+            raise FileExistsError(
+                f"Completion marker already exists: {marker}"
+            )
+
+        fd = os.open(
+            destination,
+            os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+            0o600,
+        )
+
+        try:
+            with os.fdopen(fd, "wb") as output:
+                with open(temp_path, "rb") as source_file:
+                    shutil.copyfileobj(source_file, output)
+                output.flush()
+                os.fsync(output.fileno())
+
+            copied_sequence = extract_pdb_sequence(destination)
+            copied_status, _ = validate_sequence(
+                sequence, copied_sequence
+            )
+
+            if copied_status != "PASS":
+                raise ValueError(
+                    f"Copied PDB failed validation: {copied_status}"
+                )
+
+            # Publish completion only after the copied PDB validates.
+            marker_fd = os.open(
+                marker,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                0o600,
+            )
+
+            with os.fdopen(marker_fd, "w") as marker_file:
+                marker_file.write("COMPLETE\n")
+                marker_file.flush()
+                os.fsync(marker_file.fileno())
+
+        except Exception:
+            # Leave any incomplete destination for manual inspection.
+            # Never delete a potentially valuable prediction automatically.
+            raise
+
         temp_path.unlink()
         temp_path = None
 
