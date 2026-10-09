@@ -72,18 +72,31 @@ def validate_manifest(manifest_path, report_path=None):
         path = Path(record["pdb_path"])
         expected = record["sequence"].strip().upper()
 
+        marker = path.with_name(path.name + ".complete")
+
+        observed = ""
+        matches = 0
+
         if not path.is_file():
-            status = "MISSING"
-            observed = ""
-            matches = 0
+            if marker.exists():
+                status = "ORPHAN_COMPLETION_MARKER"
+            else:
+                status = "MISSING"
+
+        elif not marker.is_file():
+            status = "INCOMPLETE_NO_MARKER"
+
         else:
             try:
-                observed = extract_pdb_sequence(path)
-                status, matches = validate_sequence(expected, observed)
+                if marker.read_text().strip() != "COMPLETE":
+                    status = "INVALID_COMPLETION_MARKER"
+                else:
+                    observed = extract_pdb_sequence(path)
+                    status, matches = validate_sequence(
+                        expected, observed
+                    )
             except Exception:
                 status = "READ_ERROR"
-                observed = ""
-                matches = 0
 
         results.append({
             "target": record["target"],
