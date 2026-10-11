@@ -84,12 +84,76 @@ def load_model():
 
     return model, tokenizer
 
-def predict(sequence, model, tokenizer):
-    from transformers.models.esm.openfold_utils.protein import (
-        Protein as OFProtein,
-        to_pdb,
-    )
+def serialize_esmfold_output(output, batch_index=0):
+    """Export one batch member from ESMFold atom14 output, without model I/O.
 
+    Positions have shape (structure stages, batch, residues, 14, 3).
+    Mapping and masks follow the Hugging Face/OpenFold atom37 contract.
+    Missing atoms and fully masked padding are allowed; mislabeled maps are not.
+    """
+    from transformers.models.esm.openfold_utils.data_transforms import make_atom14_masks
+    from transformers.models.esm.openfold_utils.feats import atom14_to_atom37
+    from transformers.models.esm.openfold_utils.protein import Protein as OFProtein, to_pdb
+
+    fields = (
+        "positions", "aatype", "atom37_atom_exists",
+        "residx_atom37_to_atom14", "residue_index", "plddt",
+    )
+    missing = [name for name in fields if name not in output]
+    if missing:
+        raise ValueError(f"Missing ESMFold output fields: {missing}")
+    if any(not isinstance(output[name], torch.Tensor) for name in fields):
+        raise ValueError("ESMFold output fields must be tensors")
+    # Transfer only the final structure stage and fields needed for serialization.
+    positions = output["positions"]
+    if positions.ndim != 5 or positions.shape[0] < 1 or positions.shape[-2:] != (14, 3):
+        raise ValueError("positions shape must be (stages, batch, residues, 14, 3)")
+    batch, residues = positions.shape[1:3]
+    if batch < 1 or residues < 1:
+        raise ValueError("positions shape requires nonempty batch and residues")
+    if not isinstance(batch_index, int) or not 0 <= batch_index < batch:
+        raise ValueError("batch_index is outside the output batch")
+    expected_shapes = {
+        "aatype": (batch, residues),
+        "atom37_atom_exists": (batch, residues, 37),
+        "residx_atom37_to_atom14": (batch, residues, 37),
+        "residue_index": (batch, residues),
+        "plddt": (batch, residues, 37),
+    }
+    for name, shape in expected_shapes.items():
+        if tuple(output[name].shape) != shape:
+            raise ValueError(f"{name} shape must be {shape}")
+    data = {name: output[name].detach().cpu() for name in expected_shapes}
+    final_positions = positions[-1].detach().float().cpu()
+    for name, value in {**data, "positions": final_positions}.items():
+        if not torch.isfinite(value).all():
+            raise ValueError(f"{name} must contain finite values")
+    for name in ("aatype", "residue_index", "residx_atom37_to_atom14"):
+        if data[name].dtype not in (torch.int32, torch.int64):
+            raise ValueError(f"{name} must have integer dtype")
+    if not ((data["aatype"] >= 0) & (data["aatype"] <= 20)).all():
+        raise ValueError("aatype must be an OpenFold residue index in [0, 20]")
+    canonical = make_atom14_masks({"aatype": data["aatype"]})
+    if not torch.equal(data["residx_atom37_to_atom14"], canonical["residx_atom37_to_atom14"]):
+        raise ValueError("atom37-to-atom14 mapping does not match aatype")
+    mask = data["atom37_atom_exists"]
+    if not ((mask == 0) | (mask == 1)).all() or (mask > canonical["atom37_atom_exists"]).any():
+        raise ValueError("atom37_atom_exists must be a binary subset of the residue atom mask")
+
+    atom37_positions = atom14_to_atom37(final_positions, data).numpy()
+    i = batch_index
+    protein = OFProtein(
+        aatype=data["aatype"][i].numpy(),
+        atom_positions=atom37_positions[i],
+        atom_mask=mask[i].numpy(),
+        residue_index=data["residue_index"][i].numpy() + 1,
+        b_factors=data["plddt"][i].float().numpy(),
+        chain_index=None,
+    )
+    return to_pdb(protein)
+
+
+def predict(sequence, model, tokenizer):
     inputs = tokenizer(
         [sequence],
         return_tensors="pt",
@@ -104,24 +168,7 @@ def predict(sequence, model, tokenizer):
     with torch.no_grad():
         output = model(**inputs)
 
-    atom37_positions = output.positions[-1][0].float().cpu().numpy()
-    aatype = output.aatype[0].cpu().numpy()
-    atom37_mask = output.atom37_atom_exists[0].cpu().numpy()
-    residue_index = (
-        output.residue_index[0].cpu().numpy() + 1
-    )
-    plddt = output.plddt[0].float().cpu().numpy()
-
-    protein = OFProtein(
-        aatype=aatype,
-        atom_positions=atom37_positions,
-        atom_mask=atom37_mask,
-        residue_index=residue_index,
-        b_factors=plddt,
-        chain_index=None,
-    )
-
-    return to_pdb(protein)
+    return serialize_esmfold_output(output)
 
 
 def save_prediction(pdb_text, destination, sequence):
