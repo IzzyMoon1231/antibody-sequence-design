@@ -14,74 +14,79 @@ from validate_esmfold_predictions import (
     validate_sequence,
 )
 
-def load_manifest(path):
-    with open(path, newline="") as handle:
+def load_manifest(path, **kwargs):
+    from validate_esmfold_predictions import load_input_manifest
+    # Existing API retains legacy inspection; v1 always uses strict context.
+    with open(path, newline='') as handle:
         rows = list(csv.DictReader(handle))
+    strict = bool(rows and rows[0].get('schema_version'))
+    return load_input_manifest(path, legacy=not strict, **kwargs)
 
-    if not rows:
-        raise ValueError("Prediction manifest is empty")
-
-    required = {"target", "method", "index", "sequence", "pdb_path"}
-    if not required.issubset(rows[0]):
-        raise ValueError("Manifest missing required columns")
-
-    return rows
 
 def check_prediction(path, sequence):
-    path = Path(path)
-    marker = path.with_name(path.name + ".complete")
+    from validate_esmfold_predictions import check_prediction_status
+    return check_prediction_status(path, sequence)
 
-    if not path.is_file():
-        if marker.exists():
-            return "ORPHAN_COMPLETION_MARKER"
-        return "MISSING"
 
-    if not marker.is_file():
-        return "INCOMPLETE_NO_MARKER"
+def observed_runtime_versions():
+    import platform
+    import importlib.metadata
+    return {'python': platform.python_version(), 'torch': importlib.metadata.version('torch'),
+            'transformers': importlib.metadata.version('transformers')}
 
-    try:
-        if marker.read_text().strip() != "COMPLETE":
-            return "INVALID_COMPLETION_MARKER"
 
-        observed = extract_pdb_sequence(path)
-        status, _ = validate_sequence(sequence, observed)
-        return status
-    except Exception:
-        return "READ_ERROR"
+def verify_model_parameters(model):
+    parameters = list(model.named_parameters())
+    if not parameters:
+        raise ValueError('Cannot verify an empty model')
+    for name, parameter in parameters:
+        expected = torch.float16 if name.startswith('esm.') else torch.float32
+        if parameter.is_floating_point() and parameter.dtype != expected:
+            raise ValueError(f'Model precision mismatch: {name}')
+        if parameter.device.type != 'cuda':
+            raise ValueError(f'Model device mismatch: {name}')
 
-def load_model():
+
+def verify_execution_contract(contract, rows, asset_root):
+    """Verify locally observable settings/assets; does not load model or authorize work."""
+    from validate_esmfold_predictions import validate_run_contract, rooted_path, file_sha256
+    run_id = validate_run_contract(contract, rows)
+    if any(r['planned_run_id'] != run_id for r in rows):
+        raise ValueError('Manifest/run contract identity mismatch')
+    actual = observed_runtime_versions()
+    if actual != contract['runtime'] or file_sha256(__file__) != contract['serializer_sha256']:
+        raise ValueError('Actual runtime/serializer differs from run contract')
+    root = Path(asset_root).resolve()
+    if not root.is_dir():
+        raise ValueError('Explicit local model assets required')
+    observed = {}
+    for path in root.rglob('*'):
+        if path.is_symlink():
+            raise ValueError('Symlinked model assets are unsupported')
+        if path.is_file():
+            relative = path.relative_to(root).as_posix()
+            observed[relative] = file_sha256(rooted_path(root, relative))
+    if observed != contract['assets']:
+        raise ValueError('Model asset inventory/hash mismatch')
+    return run_id
+
+
+def load_model(contract=None, asset_root=None):
+    if contract is None or asset_root is None:
+        raise ValueError('Pinned local run contract required before model loading')
     if not torch.cuda.is_available():
-        raise RuntimeError(
-            "CUDA GPU unavailable. Cannot run ESMFold predictions."
-        )
-
-    try:
-        import transformers
-    except ImportError as exc:
-        raise RuntimeError(
-            "Transformers is not installed. Install a compatible "
-            "ESMFold environment before running predictions."
-        ) from exc
-
+        raise RuntimeError('CUDA GPU unavailable. Cannot run ESMFold predictions.')
     from transformers import EsmForProteinFolding, AutoTokenizer
-
-    model_id = "facebook/esmfold_v1"
-
-    print("Loading ESMFold model:", model_id)
-
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-
+    # Approved assets were verified before this call; never use remote fallback.
+    tokenizer = AutoTokenizer.from_pretrained(str(asset_root), local_files_only=True,
+                                               revision=contract['model_revision'])
     model = EsmForProteinFolding.from_pretrained(
-        model_id,
-        low_cpu_mem_usage=True,
-    )
-
+        str(asset_root), local_files_only=True, revision=contract['model_revision'],
+        low_cpu_mem_usage=True)
     model = model.eval().cuda()
-
-    # Use half precision for the language model only.
-    # The folding trunk remains in float32.
     model.esm = model.esm.half()
-
+    model.set_chunk_size(contract['inference_settings']['chunk_size'])
+    verify_model_parameters(model)
     return model, tokenizer
 
 def serialize_esmfold_output(output, batch_index=0):
@@ -153,7 +158,7 @@ def serialize_esmfold_output(output, batch_index=0):
     return to_pdb(protein)
 
 
-def predict(sequence, model, tokenizer):
+def predict(sequence, model, tokenizer, inference_settings=None):
     inputs = tokenizer(
         [sequence],
         return_tensors="pt",
@@ -166,17 +171,25 @@ def predict(sequence, model, tokenizer):
     }
 
     with torch.no_grad():
-        output = model(**inputs)
+        kwargs = {} if inference_settings is None else {'num_recycles': inference_settings['num_recycles']}
+        output = model(**inputs, **kwargs)
 
     return serialize_esmfold_output(output)
 
 
-def save_prediction(pdb_text, destination, sequence):
+def save_prediction(pdb_text, destination, sequence, provenance=None):
     import os
     import tempfile
     from pathlib import Path
 
     destination = Path(destination)
+    if provenance is not None:
+        from validate_esmfold_predictions import validate_run_contract, file_sha256
+        row, contract, rows = provenance['row'], provenance['contract'], provenance['rows']
+        if row['sequence'] != sequence or row['planned_run_id'] != validate_run_contract(contract, rows):
+            raise ValueError('Persistence input/run identity mismatch')
+        if observed_runtime_versions() != contract['runtime'] or file_sha256(__file__) != contract['serializer_sha256']:
+            raise ValueError('Persistence actual runtime/serializer mismatch')
     destination.parent.mkdir(parents=True, exist_ok=True)
 
     lock_path = destination.with_name(destination.name + ".lock")
@@ -193,6 +206,9 @@ def save_prediction(pdb_text, destination, sequence):
 
         if destination.exists():
             raise FileExistsError(destination)
+        receipt_path = destination.with_name(destination.name + '.provenance.json')
+        if receipt_path.exists():
+            raise FileExistsError(receipt_path)
 
         with tempfile.NamedTemporaryFile(
             mode="w",
@@ -254,7 +270,32 @@ def save_prediction(pdb_text, destination, sequence):
                     f"Copied PDB failed validation: {copied_status}"
                 )
 
-            # Publish completion only after the copied PDB validates.
+            if provenance is not None:
+                import json
+                from datetime import datetime, timezone
+                from validate_esmfold_predictions import (file_sha256, input_bundle_digest,
+                    validate_receipt, parse_pdb_residues)
+                residues = parse_pdb_residues(destination)
+                if (len({r['chain'] for r in residues}) != 1 or
+                    any(not r['ca_present'] for r in residues) or
+                    [(r['residue_number'], r['insertion_code']) for r in residues] !=
+                        [(i, ' ') for i in range(1, len(sequence)+1)]):
+                    raise ValueError('Ambiguous generated prediction mapping')
+                receipt = dict(schema_version='uirj-prediction-receipt-v1',
+                    record_key=row['record_key'], design_id=row['design_id'],
+                    prediction_id=row['prediction_id'], prediction_replicate_id=row['prediction_replicate_id'],
+                    source_sequence_sha256=row['source_sequence_sha256'],
+                    input_bundle_digest=input_bundle_digest(rows),
+                    run_contract_sha256=row['planned_run_id'], output_pdb_sha256=file_sha256(destination),
+                    serializer_sha256=contract['serializer_sha256'], runtime=contract['runtime'],
+                    completed_at=datetime.now(timezone.utc).isoformat())
+                validate_receipt(receipt, row, contract, rows, destination)
+                receipt_fd = os.open(receipt_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                with os.fdopen(receipt_fd, 'w') as handle:
+                    json.dump(receipt, handle, sort_keys=True)
+                    handle.write('\n'); handle.flush(); os.fsync(handle.fileno())
+
+            # Publish completion only after the copied PDB and optional receipt validate.
             marker_fd = os.open(
                 marker,
                 os.O_CREAT | os.O_EXCL | os.O_WRONLY,
@@ -283,7 +324,7 @@ def save_prediction(pdb_text, destination, sequence):
             lock_path.unlink(missing_ok=True)
 
 
-def inspect_prediction_locks(manifest_path, minimum_age_minutes=60):
+def inspect_prediction_locks(manifest_path, minimum_age_minutes=60, output_root=None):
     """Report prediction locks without deleting or changing them."""
     import csv
     import time
@@ -299,7 +340,11 @@ def inspect_prediction_locks(manifest_path, minimum_age_minutes=60):
     findings = []
 
     for row in rows:
-        destination = Path(row["pdb_path"])
+        if row.get('schema_version'):
+            from validate_esmfold_predictions import rooted_path
+            destination = rooted_path(output_root, row['pdb_path'])
+        else:
+            destination = Path(row['pdb_path'])
         lock = destination.with_name(destination.name + ".lock")
 
         if not lock.exists():
@@ -329,13 +374,28 @@ def main():
     )
     parser.add_argument("--limit", type=int, default=1)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument('--input-root')
+    parser.add_argument('--upstream-root')
+    parser.add_argument('--output-root')
+    parser.add_argument('--run-contract')
+    parser.add_argument('--asset-root')
+    parser.add_argument('--execute-approved-run', help='Explicit approved contract SHA256; not inferred from JSON')
 
     args = parser.parse_args()
 
     if args.limit < 1:
         parser.error("--limit must be at least 1")
 
-    rows = load_manifest(args.manifest)
+    rows = load_manifest(args.manifest, input_root=args.input_root,
+                         upstream_root=args.upstream_root, output_root=args.output_root)
+    strict = bool(rows[0].get('schema_version'))
+    contract = None
+    if args.run_contract:
+        import json
+        contract = json.loads(Path(args.run_contract).read_text())
+    if strict:
+        from validate_esmfold_predictions import _prediction_eligibility, rooted_path
+        eligibility = {r['record_key']: _prediction_eligibility(r, args.output_root, rows, contract) for r in rows}
 
     selected = [
         row for row in rows
@@ -347,9 +407,13 @@ def main():
     pending = []
 
     for row in selected:
-        status = check_prediction(
-            row["pdb_path"], row["sequence"]
-        )
+        if strict:
+            observed = eligibility[row['record_key']]
+            status = observed['prediction_presence_status']
+            if status == 'PASS' and observed['run_provenance_status'] != 'VERIFIED':
+                status = 'SEQUENCE_MATCH_RUN_UNVERIFIED'
+        else:
+            status = check_prediction(row["pdb_path"], row["sequence"])
 
         statuses[status] += 1
 
@@ -392,6 +456,12 @@ def main():
         print("All selected predictions already completed.")
         return
 
+    if not strict or contract is None or not args.asset_root:
+        raise ValueError('Execution requires v1 manifest, complete local run contract and asset root')
+    run_id = verify_execution_contract(contract, rows, args.asset_root)
+    if args.execute_approved_run != run_id:
+        raise ValueError('Explicit execution authorization for this contract hash required')
+
     if not torch.cuda.is_available():
         print(
             "\nGPU UNAVAILABLE: No predictions attempted. "
@@ -399,12 +469,12 @@ def main():
         )
         return
 
-    model, tokenizer = load_model()
+    model, tokenizer = load_model(contract, args.asset_root)
 
     completed = 0
 
     for row in pending[:args.limit]:
-        destination = Path(row["pdb_path"])
+        destination = rooted_path(args.output_root, row["pdb_path"])
         sequence = row["sequence"]
 
         print(
@@ -412,9 +482,15 @@ def main():
             f"{row['method']} #{row['index']}"
         )
 
-        pdb_text = predict(sequence, model, tokenizer)
+        # Derive each prediction seed from its stable identity, not processing order.
+        import hashlib
+        seed = (contract['seed'] + int(hashlib.sha256(row['prediction_id'].encode('ascii')).hexdigest()[:8], 16)) % 2**32
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.use_deterministic_algorithms(contract['deterministic_algorithms'])
+        pdb_text = predict(sequence, model, tokenizer, contract['inference_settings'])
 
-        save_prediction(pdb_text, destination, sequence)
+        save_prediction(pdb_text, destination, sequence, {'row': row, 'contract': contract, 'rows': rows})
 
         print("SAVED AND VERIFIED:", destination)
         completed += 1
