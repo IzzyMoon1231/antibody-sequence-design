@@ -1,0 +1,24 @@
+{
+  "verified_at_utc": "2026-10-21T05:03:27.377280+00:00",
+  "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+  "commit": "6244b0db631742d7d8c0a3d85f9bf8628a292c3d",
+  "method": "compute_RSMD.py, per-domain framework fitting",
+  "targets": [
+    "9NFU",
+    "9NH7"
+  ],
+  "methods_recomputed": [
+    "baseline"
+  ],
+  "predicted_structures": 200,
+  "cdr_records": 900,
+  "framework_records": 300,
+  "cdr_numeric_differences": 0,
+  "framework_numeric_differences": 0,
+  "result": "PASS",
+  "input_sha256": {
+    "9NFU_baseline_fasta": "28ebea5535f029e354f110ced908e72b572b6176b7f11056b5da16f3589c7cb0",
+    "9NH7_baseline_fasta": "fa3f61ffa24d6ae220577d59567b9fe0e052d19c94bafb3771e82d2969571802",
+    "approved_script": "06f2a31d2a1d3cff99d13f956f4b6cdd404bb1b999dd9f6c684d9822cb50e31e"
+  }
+}
