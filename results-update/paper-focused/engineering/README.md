@@ -2,7 +2,36 @@
 
 The student-facing result is [READ_RESULTS.md](../READ_RESULTS.md). Engineering checks establish computation and artifact behavior, not independent biological or causal acceptance.
 
-## Executed checks
+## Current transparent notebook revision
+
+The sections below this notice are **historical receipts**, not descriptions of the
+current updater. Current behavior is select → preview → validate → calculate → plot
+from memory → reason → explicit opt-in export. A normal Run All writes no analysis
+outputs. Failed input checks preserve earlier exports instead of deleting them.
+The notebook never reads an existing PNG. `workflow.py` pins original qualification
+to selected bytes and rejects mutated in-memory previews. Counts need not be 100;
+main arms may differ, while complete loop coverage and explicit ablation pairs remain
+mandatory. Ablation can be explicitly omitted; the main structural section cannot.
+
+Current verification: [transparent-notebook.json](transparent-notebook.json) and
+[transparent-suite-green.log](transparent-suite-green.log). Fresh kernels exercise
+original real data, smaller unequal-count/reversed synthetic controls, explicit
+ablation omission, the actual final export cell, and missing/invalid inputs.
+Artist coordinates and image/prose changes are checked against selected rows;
+no saved figures are copied into the cell-workflow test workspace. Input/output
+hash snapshots verify no analysis writes before export and preservation afterwards.
+The old deletion/path-Image assertions were deliberately replaced for the requested
+non-overwriting policy, not weakened to admit missing measurements. All original
+numeric expectations remain unchanged.
+
+Semantic REDs for hidden publish-all setup, mutated-preview provenance inheritance,
+wrong scoring threshold, and missing preview columns are retained locally (excluded
+from publication because tracebacks contain private paths). The first synthetic
+subset fixture failed because lexically ordered antibody IDs were sliced by row;
+it was corrected to select by numeric identity. This is a fixture correction,
+not a scientific result. No inference, upstream scripts, network or installs ran.
+
+## Historical executed checks
 
 - `test_analysis.py` compares every numeric Table 1 column to the independently checked retained table, and all numeric ablation summary columns to the checked chain-specific output (tolerance 1e-12). Expected tables are derived from public observations; they contain no manuscript text.
 - The changed-input control edits actual copied workbooks, H3 CSV and ablation CSV. It reverses humanness/structural directions and ablation signs, then checks regenerated prose, HTML, plotted mean values and both main/ablation image bytes. These mutations are synthetic tests, never presented as observations.

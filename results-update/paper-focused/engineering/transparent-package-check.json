@@ -1,0 +1,16 @@
+{
+  "frozen_input_table_figure_files": 24,
+  "changed_frozen_files": [],
+  "allowlisted_files": 50,
+  "relative_markdown_links": 32,
+  "broken_links": [],
+  "private_path_token_scan_matches": [],
+  "notebook": {
+    "clean_kernel": "PASS",
+    "executed_code_cells": 10,
+    "embedded_png_outputs": 3,
+    "error_outputs": 0,
+    "analysis_export_enabled": false
+  },
+  "verification": "Fresh-kernel originals and synthetic controls; actual plot output visually inspected; no remote renderer qualification"
+}

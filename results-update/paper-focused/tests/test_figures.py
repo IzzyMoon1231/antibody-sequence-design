@@ -68,7 +68,7 @@ class FigureTests(unittest.TestCase):
             (dest/'inputs/ablation_scores.csv').unlink()
             with self.assertRaises(ValueError): analysis.publish(dest)
             for name in ('figure1','figure2','experiment_map'):
-                self.assertFalse((dest/f'figures/{name}.png').exists())
+                self.assertTrue((dest/f'figures/{name}.png').exists(), 'Prior export preserved')
 
     def test_plain_opening_and_notebook_figure_hierarchy(self):
         d=analysis.load(ROOT); t,a=analysis.summarize(d)
@@ -77,8 +77,8 @@ class FigureTests(unittest.TestCase):
         t['biophi_heavy_difference_medians']=-.2
         self.assertTrue(analysis.describe(d,t,a)[0].startswith('Ensemble sequences score lower'))
         source=(ROOT/'build_notebook.py').read_text()
-        self.assertIn('figures/experiment_map.png',source)
-        self.assertIn('figures/figure2.png',source)
+        self.assertIn('analysis.plot_experiment_map(data)',source)
+        self.assertIn('analysis.plot_ablation(ablation_table, ablation)',source)
         self.assertNotIn('Bars show',source)
         self.assertNotIn('## Paper changes',source)
 

@@ -69,9 +69,9 @@ class AnalysisTests(unittest.TestCase):
             (dest/'inputs/ablation_scores.csv').unlink()
             with self.assertRaisesRegex(ValueError,'Missing input'):
                 analysis.publish(dest)
-            self.assertFalse((dest/'figures/figure1.png').exists())
-            self.assertFalse((dest/'tables/table1.csv').exists(), 'Stale tables must not survive failed update')
-            self.assertIn('Update failed',(dest/'READ_RESULTS.md').read_text())
+            self.assertTrue((dest/'figures/figure1.png').exists(), 'Historical exports must survive failed input validation')
+            self.assertTrue((dest/'tables/table1.csv').exists())
+            self.assertNotIn('Update failed',(dest/'READ_RESULTS.md').read_text())
 
     def test_review_loop_coverage_and_regeneration(self):
         import analysis, tempfile, shutil, pandas as pd
@@ -110,8 +110,8 @@ class AnalysisTests(unittest.TestCase):
             raw.to_csv(p,index=False)
             with self.assertRaisesRegex(ValueError,'Complete loops'):
                 analysis.publish(dest)
-            self.assertFalse((dest/'tables/loops.csv').exists())
-            self.assertIn('Update failed',(dest/'READ_RESULTS.md').read_text())
+            self.assertTrue((dest/'tables/loops.csv').exists())
+            self.assertNotIn('Update failed',(dest/'READ_RESULTS.md').read_text())
 
     def test_notebook_builder_exists(self):
         self.assertTrue((ROOT/'build_notebook.py').exists(), 'Need reproducible clean-kernel notebook builder')
@@ -141,7 +141,7 @@ class AnalysisTests(unittest.TestCase):
             ('nonfinite','Invalid rmsd_angstrom'),
             ('confidence','low_confidence must match'),
             ('duplicate_ablation','unique case_condition'),
-            ('unpaired_ablation','100 complete finite reported seed pairs'),
+            ('unpaired_ablation','complete finite reported seed pairs'),
             ('denominator','declared peptide denominator'),
             ('fasta','VH/FASTA mismatch'),
         ]

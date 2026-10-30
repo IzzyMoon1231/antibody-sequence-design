@@ -25,71 +25,9 @@ def fasta(path):
 
 
 def load(root):
-    root = Path(root)
-    selection = pd.read_csv(root/'selection.csv')
-    if set(selection.columns) != {'structure', 'method', 'workbook', 'fasta'}:
-        raise ValueError('selection.csv: require structure, method, workbook, fasta columns')
-    if set(zip(selection.structure, selection.method)) != {(s,m) for s in CASES for m in METHODS} or len(selection)!=4:
-        raise ValueError('selection.csv: select exactly one baseline and ensemble for each supported case')
-    paths = list(selection.workbook)+list(selection.fasta)+['inputs/cdr_rmsd_results.csv','inputs/ablation_scores.csv']
-    for p in paths:
-        if Path(p).is_absolute() or not (root/p).resolve().is_relative_to(root.resolve()):
-            raise ValueError('Input paths must stay inside the package')
-        if not (root/p).is_file():
-            raise ValueError(f'Missing input: {p}. Restore it or correct selection.csv; no results regenerated.')
-    rows = []
-    for r in selection.itertuples():
-        overview = pd.read_excel(root/r.workbook, sheet_name='Overview')
-        vh = pd.read_excel(root/r.workbook, sheet_name='VH')
-        seqs = {str(row['Antibody']): ''.join(str(row[c]) for c in vh.columns if c not in ['Antibody','scheme','chain_type'] and pd.notna(row[c])).replace('-','').replace(' ','') for _,row in vh.iterrows()}
-        overview = overview[overview.Antibody.str.endswith('_VH')] if overview.Antibody.str.endswith('_VH').any() else overview
-        sequences = fasta(root/r.fasta)
-        for _, row in overview.iterrows():
-            match = re.search(r'(\d+)(?:_VH)?$',str(row.Antibody))
-            if not match:
-                raise ValueError(f'{r.workbook}: unsupported Antibody ID {row.Antibody}')
-            idx = int(match[1]) - (r.method == 'baseline')
-            seq = seqs.get(row.Antibody)
-            if idx < 0 or idx >= len(sequences) or not seq or seq not in sequences[idx][1]:
-                raise ValueError(f'{r.workbook}: VH/FASTA mismatch at {row.Antibody}; correct sequence linkage first')
-            rows.append(dict(structure=r.structure,method=r.method,index=idx,oasis=row['Heavy OASis Identity']))
-    bio = pd.DataFrame(rows)
-    if bio.duplicated(['structure','method','index']).any():
-        raise ValueError('BioPhi: duplicate case/method/index')
-    for _,g in bio.groupby(['structure','method']):
-        if set(g['index']) != set(range(100)):
-            raise ValueError('BioPhi: this selected-cohort reader requires exactly indices 0–99 per arm')
-    raw = pd.read_csv(root/'inputs/cdr_rmsd_results.csv')
-    required={'cdr','method','structure','design_id','domain','rmsd_angstrom','n_atoms_per_residue','cdr_mean_plddt','low_confidence','framework_rmsd_angstrom'}
-    if required-set(raw.columns):
-        raise ValueError('cdr_rmsd_results.csv: missing columns: '+', '.join(sorted(required-set(raw.columns))))
-    h3 = raw[(raw.cdr=='H3') & raw.method.isin(METHODS) & raw.structure.isin(CASES)].copy()
-    h3['index'] = h3.design_id.str.extract(r'(\d+)$').astype(int)
-    main = bio.merge(h3,on=['structure','method','index'],how='outer',validate='one_to_one',indicator=True)
-    if not main._merge.eq('both').all():
-        raise ValueError('H3 metrics and scored VH must have identical case/method/index keys')
-    if not main.n_atoms_per_residue.eq(3).all() or not main.domain.eq(main.structure.map({'9NH7':'VHH','9NFU':'VH'})).all():
-        raise ValueError('Unsupported H3 endpoint: require per-domain N/CA/C backbone, VHH or VH')
-    for col,lo,hi in [('oasis',0,1),('rmsd_angstrom',0,np.inf),('cdr_mean_plddt',0,100),('framework_rmsd_angstrom',0,np.inf)]:
-        if not np.isfinite(main[col]).all() or not main[col].between(lo,hi).all():
-            raise ValueError(f'Invalid {col}: require finite values in [{lo}, {hi}]')
-    if not main.low_confidence.eq((main.cdr_mean_plddt<70).astype(int)).all():
-        raise ValueError('low_confidence must match H3 mean pLDDT < 70')
-    a = pd.read_csv(root/'inputs/ablation_scores.csv')
-    meta = a.id.str.extract(r'^(?P<structure>9NH7|9NFU)_(?P<condition>cdrh3|others)_(?P<method>baseline|ensemble)_s(?P<seed>\d+)$')
-    if not meta.notna().all().all() or a.id.duplicated().any():
-        raise ValueError('Ablation: require unique case_condition_method_sN identifiers')
-    a = pd.concat([a,meta],axis=1)
-    for st in CASES:
-        for condition in ('cdrh3','others'):
-            g = a[(a.structure==st)&(a.condition==condition)]
-            w = g.pivot(index='seed',columns='method',values='Heavy OASis Identity')
-            if set(w.columns)!=set(METHODS) or set(w.index)!=set(map(str,range(100))) or not np.isfinite(w.to_numpy()).all() or not ((w>=0)&(w<=1)).all().all():
-                raise ValueError(f'Ablation {st}/{condition}: require 100 complete finite reported seed pairs, scores 0–1')
-    original = {x['path']:x['sha256'] for x in json.loads((root/'inputs/provenance.json').read_text())}
-    hashes = {p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in paths}
-    return dict(main=main.drop(columns='_merge'), loops=raw[raw.method.isin(METHODS) & raw.structure.isin(CASES)].copy(), ablation=a, hashes=hashes,
-                original_inputs=all(original.get(p)==v for p,v in hashes.items()))
+    """Compatibility entry point; notebook exposes reading and validation separately."""
+    from workflow import read_inputs, validate_inputs
+    return validate_inputs(read_inputs(root))
 
 
 def summarize(data):
@@ -97,7 +35,7 @@ def summarize(data):
     for st in CASES:
         g=data['main'].query('structure==@st')
         b=g[g.method=='baseline']; e=g[g.method=='ensemble']
-        tables.append(dict(structure=st,humanness_n_per_arm=len(b),h3_n_per_arm=len(b),
+        tables.append(dict(structure=st,humanness_n_per_arm=len(b) if len(b)==len(e) else np.nan,h3_n_per_arm=len(b) if len(b)==len(e) else np.nan,baseline_n=len(b),ensemble_n=len(e),
             biophi_heavy_baseline_median=b.oasis.median(),biophi_heavy_ensemble_median=e.oasis.median(),
             biophi_heavy_difference_medians=e.oasis.median()-b.oasis.median(),
             h3_baseline_median_A=b.rmsd_angstrom.median(),h3_ensemble_median_A=e.rmsd_angstrom.median(),
@@ -113,7 +51,7 @@ def summarize(data):
                 raise ValueError(f'Ablation {st}/{cond}/{domain}: scores do not match the declared peptide denominator {denom}')
             d=w.ensemble-w.baseline
             abl.append(dict(structure=st,condition=cond,domain=domain,n_pairs=len(w),designed_domain_residues=npos,peptide_denominator=denom,baseline_mean=w.baseline.mean(),ensemble_mean=w.ensemble.mean(),mean_difference=d.mean(),mean_gain_percentage_points=100*d.mean(),gain_per_designed_residue=d.mean()/npos if npos else np.nan,mean_additional_qualifying_9mers=d.mean()*denom,positive=int((d>0).sum()),negative=int((d<0).sum()),zero=int((d==0).sum())))
-    return pd.DataFrame(tables),pd.DataFrame(abl)
+    return pd.DataFrame(tables),pd.DataFrame(abl, columns=['structure','condition','domain','n_pairs','designed_domain_residues','peptide_denominator','baseline_mean','ensemble_mean','mean_difference','mean_gain_percentage_points','gain_per_designed_residue','mean_additional_qualifying_9mers','positive','negative','zero'])
 
 
 def direction(value):
@@ -131,6 +69,8 @@ def describe(data, table, ablation):
         bq=b.rmsd_angstrom.quantile([.25,.75]); eq=e.rmsd_angstrom.quantile([.25,.75])
         overlap=max(bq.iloc[0],eq.iloc[0]) <= min(bq.iloc[1],eq.iloc[1])
         cases.append(f"**{t.structure}.** H3 interquartile ranges are {bq.iloc[0]:.3f}–{bq.iloc[1]:.3f} Å (baseline) and {eq.iloc[0]:.3f}–{eq.iloc[1]:.3f} Å (ensemble); these ranges {'overlap' if overlap else 'do not overlap'}. The ensemble middle-half spread is {direction((eq.iloc[1]-eq.iloc[0])-(bq.iloc[1]-bq.iloc[0]))}. Mean H3 RMSD is {b.rmsd_angstrom.mean():.5f} → {e.rmsd_angstrom.mean():.5f} Å; framework medians are {b.framework_rmsd_angstrom.median():.3f} → {e.framework_rmsd_angstrom.median():.3f} Å. H3 mean pLDDT is below 70 in {int(b.low_confidence.sum())}/{len(b)} → {int(e.low_confidence.sum())}/{len(e)} designs. All remain in the primary summaries; low confidence weakens interpretation as a true fold, not the retained arithmetic.")
+        if ablation.empty:
+            continue
         h=ablation[(ablation.structure==t.structure)&(ablation.domain=='H')].set_index('condition')
         comparison=direction(h.loc['others','mean_difference']-h.loc['cdrh3','mean_difference'])
         regions.append(f"{t.structure}: the mean difference outside H3 is {comparison} than H3-only ({h.loc['others','mean_difference']:+.5f} versus {h.loc['cdrh3','mean_difference']:+.5f}); positive reported pairs: {int(h.loc['others','positive'])}/{int(h.loc['others','n_pairs'])} versus {int(h.loc['cdrh3','positive'])}/{int(h.loc['cdrh3','n_pairs'])}.")
@@ -154,8 +94,10 @@ def loop_summary(data):
             row=dict(structure=st,cdr=cdr)
             for method in METHODS:
                 arm=g[g.method==method]
-                if len(arm)!=100 or arm.design_id.nunique()!=100:
-                    raise ValueError('Complete loops require 100 unique designs per arm')
+                expected = set(data['main'].query('structure==@st and method==@method')['index'])
+                observed = set(arm.design_id.str.extract(r'(\d+)$')[0].astype(int))
+                if observed != expected or len(arm)!=len(expected):
+                    raise ValueError('Complete loops require the same unique design indices as the scored arm')
                 if not np.isfinite(arm.rmsd_angstrom).all() or not arm.rmsd_angstrom.ge(0).all():
                     raise ValueError('Invalid loop RMSD')
                 row[method+'_n']=len(arm)
@@ -211,6 +153,10 @@ def plot_ablation(ablation, observations):
     import matplotlib.pyplot as plt
     plt.rcParams.update({'font.size':14,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'})
     fig,axes=plt.subplots(2,1,figsize=(6.2,6.5),layout='constrained')
+    if observations.empty:
+        for ax in axes: ax.axis('off')
+        axes[0].text(.05,.5,'Ablation not selected — no comparison computed',fontsize=12)
+        return fig
     for ax,st in zip(axes,CASES):
         ax.axvline(0,color='#555555',linewidth=.8)
         for j,cond in enumerate(('cdrh3','others')):
@@ -256,23 +202,15 @@ ABLATION='Figure 2 uses a separate loop-group generation cohort. Light dots show
 LINKAGE='For the pinned original inputs, prior audit linked scored VH to final-filled FASTAs and full predicted sequences, and replayed the implemented coordinate measurements without numeric discrepancies. This package rechecks the scored-VH/FASTA link and recalculates retained metrics; it does not rerun coordinate replay, folding or BioPhi scoring. Computation verification is distinct from independent biological mapping or causal acceptance.'
 
 
-def publish(root):
+def publish(root, data=None):
     import html
     import base64
     import matplotlib.pyplot as plt
     root=Path(root)
-    try:
-        data=load(root); table,ablation=summarize(data)
-        loops,loop_readout=loop_summary(data)
-    except (ValueError,KeyError,FileNotFoundError) as exc:
-        message=f'Update failed: {exc}'
-        (root/'READ_RESULTS.md').write_text('# Update failed\n\n'+message+'\n')
-        (root/'results.html').write_text('<h1>Update failed</h1><p>'+html.escape(message)+'</p>')
-        for name in [f'{name}.{ext}' for name in ('figure1','figure2','experiment_map','9NH7_distributions','9NFU_distributions') for ext in ('png','svg')]:
-            (root/'figures'/name).unlink(missing_ok=True)
-        for name in ['tables/table1.csv','tables/ablation.csv','tables/loops.csv','engineering/run.json','APPENDIX.md']:
-            (root/name).unlink(missing_ok=True)
-        raise ValueError(message) from exc
+    if data is None:
+        data=load(root)
+    table,ablation=summarize(data)
+    loops,loop_readout=loop_summary(data)
     (root/'figures').mkdir(exist_ok=True); (root/'tables').mkdir(exist_ok=True); (root/'engineering').mkdir(exist_ok=True)
     table.to_csv(root/'tables/table1.csv',index=False); ablation.to_csv(root/'tables/ablation.csv',index=False)
     answer,cases,regions=describe(data,table,ablation)
@@ -300,10 +238,10 @@ def publish(root):
     status='Pinned retained-input analysis' if data['original_inputs'] else 'Changed-input analysis — original coordinate and execution audit does not transfer to changed files.'
     link=LINKAGE if data['original_inputs'] else 'Scored VH/FASTA linkage was rechecked, but changed input bytes are not covered by the pinned coordinate audit. Interpretation remains provisional; updating a metric file is not new measurement validation.'
     display=table_display(table)
-    n=int(table.humanness_n_per_arm.iloc[0]); pairs=int(ablation.n_pairs.iloc[0]); total=len(data['ablation'])
-    caption=f'Each main cell is a median over {n} draws per arm per case; B = baseline, E = ensemble. Deltas are differences of marginal medians, not paired changes. Higher Identity indicates greater repertoire similarity; higher RMSD indicates greater displacement from the deposited reference.'
-    abcaption=f'{pairs} reported pairs per condition; {total} ablation designs in total. '+ABLATION
-    main_caption=f'Light sequence dots are all {n} observed draws per arm in each case; black ticks mark medians. Structural dots are group medians for every measured loop. Thick lines show the middle half (25th–75th percentiles), not confidence intervals. All draws keep their original weight, including repeated sequences. Baseline and ensemble are separate collections: no row-pairing or connecting designs. Higher Identity means more human-repertoire sequence similarity; lower RMSD means closer to the deposited reference. These are whole heavy-domain scores and domain-local loop distances, not immune-response or binding measurements.'
+    n=' / '.join(f'{r.structure}: B={r.baseline_n}, E={r.ensemble_n}' for r in table.itertuples()); pairs=' / '.join(f'{r.structure}/{r.condition}/{r.domain}: {r.n_pairs}' for r in ablation.itertuples()) or 'none selected'; total=len(data['ablation'])
+    caption=f'Each main cell is a marginal median; selected draw counts: {n}; B = baseline, E = ensemble. Deltas are differences of marginal medians, not paired changes. Higher Identity indicates greater repertoire similarity; higher RMSD indicates greater displacement from the deposited reference.'
+    abcaption=f'Reported pair counts: {pairs}; {total} ablation designs in total. '+ABLATION
+    main_caption=f'Light sequence dots retain all observed draws ({n}); black ticks mark medians. Structural dots are group medians for every measured loop. Thick lines show the middle half (25th–75th percentiles), not confidence intervals. All draws keep their original weight, including repeated sequences. Baseline and ensemble are separate collections: no row-pairing or connecting designs. Higher Identity means more human-repertoire sequence similarity; lower RMSD means closer to the deposited reference. These are whole heavy-domain scores and domain-local loop distances, not immune-response or binding measurements.'
     map_caption='Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Arrows show which measurements belong to each collection, not a causal effect.'
     (root/'AUTHOR_CHECKLIST.md').write_text('# Author checklist — manuscript integration\n\n'+PAPER_CHANGES+'\n\n- [ ] Replace stale values using [Table 1](tables/table1.csv) and [all loops](tables/loops.csv).\n- [ ] Use [Figure 1](figures/figure1.svg) for the main question and [Figure 2](figures/figure2.svg) for the separate ablation.\n- [ ] Keep conventions in [Sources and methods](SOURCES.md); keep the experiment map in the notebook unless the paper needs it.\n- [ ] Review all claims against the qualifications above; notebook completion is not manuscript endorsement.\n')
     md='# Repertoire similarity and structural cost\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n'+map_caption+'\n\n![Experiment map](figures/experiment_map.png)\n\n## Figure 1 · Sequence similarity and every measured loop\n\n'+main_caption+'\n\n![Figure 1. Main distributions and all-loop comparison](figures/figure1.png)\n\n'+loop_readout+'\n\n## Table 1 · Numerical reference\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n## Figure 2 · Where are differences seen in the separate ablation?\n\n'+abcaption+'\n\n![Figure 2. Reported seed-pair differences](figures/figure2.png)\n\n'+regions+'\n\n'+light_note+'\n\n## What this evidence supports\n\n'+LIMIT+'\n\n'+link+'\n\n[Spread and confidence details](APPENDIX.md) · [Sources and methods](SOURCES.md) · [Update guide](README.md) · [Executed notebook](results.ipynb) · [Author checklist — Paper changes](AUTHOR_CHECKLIST.md) · [Engineering checks](engineering/README.md)\n'
