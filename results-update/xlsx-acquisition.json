@@ -1,0 +1,9 @@
+[
+  {
+    "path": "inputs/sanithu/Oasis_compute/output/oasis_output_ensemble/9NH7_ensemble_oasis.xlsx",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "git_blob": "fcd413d8ebeccc4713200daba5ca343cfa87eb39",
+    "sha256": "b1970a99fbaa24d3c7c936e9017ff937426abf3f70a7b33c61d45442857370f5"
+  }
+]

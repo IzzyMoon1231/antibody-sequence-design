@@ -1,0 +1,19 @@
+{
+  "checked_utc": "2026-10-30T04:55:56.781336+00:00",
+  "repositories": [
+    {
+      "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+      "public": true,
+      "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+      "commit_date": "2026-10-25T16:32:52Z"
+    },
+    {
+      "repository": "IzzyMoon1231/antibody-sequence-design",
+      "public": true,
+      "commit": "f76c09fa3458da7c33daa76de150ab5f8c9a96c9",
+      "commit_date": "2026-10-21T05:18:17Z"
+    }
+  ],
+  "changed_since_pins": false,
+  "drive": "not recovered"
+}

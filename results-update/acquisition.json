@@ -1,0 +1,119 @@
+[
+  {
+    "path": "inputs/sanithu/baseline_sequences/baseline_sequences_final_filled/9NH7_EBH.fa",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "baseline_sequences/baseline_sequences_final_filled/9NH7_EBH.fa",
+    "git_blob": "fb76c39f574482dcb0c3c3ef8da2be8f9c33a681",
+    "sha256": "6d9fcac566c414a32d2b86104e052c7ed609dfd98134934127400cace1f539f6",
+    "bytes": 18992
+  },
+  {
+    "path": "inputs/sanithu/baseline_sequences/baseline_sequences_final_filled/9NFU.fa",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "baseline_sequences/baseline_sequences_final_filled/9NFU.fa",
+    "git_blob": "6f75dc71f6cd43c042e8d6a5ef07311f215b8923",
+    "sha256": "36c1fda30494b8d5ff26a782a7013eaf92ec1f20eeba5d3b17bc30fab52faa9c",
+    "bytes": 32192
+  },
+  {
+    "path": "inputs/sanithu/ensemble_sequences/ensemble_sequences_final_filled/9NH7.fa",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "ensemble_sequences/ensemble_sequences_final_filled/9NH7.fa",
+    "git_blob": "5d493edeb4f356c8d778e285e5281b5de980fbfa",
+    "sha256": "2fb98adea795fe90a3ff42e29e59c86c45c82874e66a5b2c9a822581ccc8e8b6",
+    "bytes": 16090
+  },
+  {
+    "path": "inputs/sanithu/ensemble_sequences/ensemble_sequences_final_filled/9NFU.fa",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "ensemble_sequences/ensemble_sequences_final_filled/9NFU.fa",
+    "git_blob": "fec242049454bfc8136b6d3050049775d247571c",
+    "sha256": "24b98a59510fe742a5847d36613a9a2ab5132cc0dae12ac428e84265b0e387b0",
+    "bytes": 29290
+  },
+  {
+    "path": "inputs/sanithu/AbMPNN_sequences/9NH7_AbMPNN_100_FINAL_FILLED.fa",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "AbMPNN_sequences/9NH7_AbMPNN_100_FINAL_FILLED.fa",
+    "git_blob": "6bd2b4e4e6d2603b0ea6ff38fab118c8816a5990",
+    "sha256": "42cada198eb30a404291ce27137f2bd0283f26bf7b457932ee9ad60cb1448eeb",
+    "bytes": 13400
+  },
+  {
+    "path": "inputs/sanithu/AbMPNN_sequences/9NFU_AbMPNN_100_FINAL_FILLED.fa",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "AbMPNN_sequences/9NFU_AbMPNN_100_FINAL_FILLED.fa",
+    "git_blob": "7c7351ee45f959ecfd932e19587c5a753d23c8c1",
+    "sha256": "62a57d9898090d511321c17567c9abb0ae7205853e9274b067c1b7549cceaf8f",
+    "bytes": 26900
+  },
+  {
+    "path": "inputs/sanithu/Oasis_compute/output/oasis_proteinmpnn_summary.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "Oasis_compute/output/oasis_proteinmpnn_summary.csv",
+    "git_blob": "12553d3dc9bd19fb01602f2ab7249120f2b07f63",
+    "sha256": "898be2a47e4795c413c3c6a71e7b7040f3cdbfc9014e49cac36768d7c8c69cb2",
+    "bytes": 12392
+  },
+  {
+    "path": "inputs/sanithu/Oasis_compute/output/oasis_ensemble_summary.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "Oasis_compute/output/oasis_ensemble_summary.csv",
+    "git_blob": "328821c28c8a5e1a58523e4285882997229aae2b",
+    "sha256": "3d80b37ca25bbcab7ebcd7aad361aad2f0dd870677eb3e68e08eb1feb885f746",
+    "bytes": 12985
+  },
+  {
+    "path": "inputs/sanithu/Oasis_compute/output/oasis_abmpnn_summary.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "Oasis_compute/output/oasis_abmpnn_summary.csv",
+    "git_blob": "0e556e7894a294dc4959467a08a3e2d950dcbbd8",
+    "sha256": "28b2f244e3efb51d35681a9f5c47d8b111ae9d279257dfa6afa71c58ac512629",
+    "bytes": 9393
+  },
+  {
+    "path": "inputs/sanithu/RSMD_RESULTS/cdr_rmsd_framework.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "RSMD_RESULTS/cdr_rmsd_framework.csv",
+    "git_blob": "eaffe068aecd4c6949da9ba167eb49c821f67afb",
+    "sha256": "545432700cfb1dcfb74fd740a8529bbd73f0d3a559c93a58f84f90a1f3223954",
+    "bytes": 72222
+  },
+  {
+    "path": "inputs/sanithu/wilcoxon_task_files/3_data/designs_filled.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "wilcoxon_task_files/3_data/designs_filled.csv",
+    "git_blob": "93fa505dc3becbe8946be126bb62188433a5df99",
+    "sha256": "cbee741016613d113148baae27d751b2a4f59666166dc2aae0a4935283e58b5b",
+    "bytes": 167221
+  },
+  {
+    "path": "inputs/sanithu/wilcoxon_task_files/3_data/cdr_rmsd_results_v3.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "wilcoxon_task_files/3_data/cdr_rmsd_results_v3.csv",
+    "git_blob": "efce40bdccc3c6b603f9535e9a1a36a7063352a3",
+    "sha256": "a62eef03d6bbfcc16c4895e81f307c982769608fc1f71baec35aa395141d0551",
+    "bytes": 77303
+  },
+  {
+    "path": "inputs/sanithu/wilcoxon_task_files/3_data/oasis_scores_promb.csv",
+    "repository": "sanithuheen/ProteinMPNN-Ablang-antibody-design",
+    "commit": "bc3a1070a4e63489ef785763ae2193c4ffd5aa19",
+    "source_path": "wilcoxon_task_files/3_data/oasis_scores_promb.csv",
+    "git_blob": "5e4b9051baa67f6bdcacd09d3888e37d13e94d2d",
+    "sha256": "723dffedbf146495957ca017f3c3f9fab0fd25ed80df7f5e4ac6de3820aa6a43",
+    "bytes": 25093
+  }
+]

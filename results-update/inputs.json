@@ -1,0 +1,132 @@
+{
+  "title": "Private repository snapshot review \u2014 not latest Jacob Drive",
+  "fasta": [
+    {
+      "path": "inputs/sanithu/baseline_sequences/baseline_sequences_final_filled/9NH7_EBH.fa",
+      "structure": "9NH7",
+      "method": "baseline",
+      "cohort": "repository-final-filled"
+    },
+    {
+      "path": "inputs/sanithu/ensemble_sequences/ensemble_sequences_final_filled/9NH7.fa",
+      "structure": "9NH7",
+      "method": "ensemble",
+      "cohort": "repository-final-filled"
+    },
+    {
+      "path": "inputs/sanithu/AbMPNN_sequences/9NH7_AbMPNN_100_FINAL_FILLED.fa",
+      "structure": "9NH7",
+      "method": "AbMPNN",
+      "cohort": "repository-final-filled"
+    },
+    {
+      "path": "inputs/sanithu/baseline_sequences/baseline_sequences_final_filled/9NFU.fa",
+      "structure": "9NFU",
+      "method": "baseline",
+      "cohort": "repository-final-filled"
+    },
+    {
+      "path": "inputs/sanithu/ensemble_sequences/ensemble_sequences_final_filled/9NFU.fa",
+      "structure": "9NFU",
+      "method": "ensemble",
+      "cohort": "repository-final-filled"
+    },
+    {
+      "path": "inputs/sanithu/AbMPNN_sequences/9NFU_AbMPNN_100_FINAL_FILLED.fa",
+      "structure": "9NFU",
+      "method": "AbMPNN",
+      "cohort": "repository-final-filled"
+    }
+  ],
+  "designs": [
+    {
+      "path": "inputs/sanithu/wilcoxon_task_files/3_data/designs_filled.csv",
+      "cohort": "Jacob-repository-Oct25"
+    }
+  ],
+  "metrics": [
+    {
+      "path": "inputs/sanithu/Oasis_compute/output/oasis_proteinmpnn_summary.csv",
+      "cohort": "repository-final-filled",
+      "kind": "oasis",
+      "id_column": "sequence_id",
+      "value_column": "oasis_score",
+      "domain_column": null,
+      "endpoint": "BioPhi source-selected OASis score",
+      "unit": "fraction"
+    },
+    {
+      "path": "inputs/sanithu/Oasis_compute/output/oasis_ensemble_summary.csv",
+      "cohort": "repository-final-filled",
+      "kind": "oasis",
+      "id_column": "sequence_id",
+      "value_column": "oasis_identity",
+      "domain_column": null,
+      "endpoint": "BioPhi Overview OASis Identity",
+      "unit": "fraction"
+    },
+    {
+      "path": "inputs/sanithu/Oasis_compute/output/oasis_abmpnn_summary.csv",
+      "cohort": "repository-final-filled",
+      "kind": "oasis",
+      "id_column": "sequence_id",
+      "value_column": "oasis_score",
+      "domain_column": null,
+      "endpoint": "BioPhi source-selected OASis score",
+      "unit": "fraction"
+    },
+    {
+      "path": "inputs/sanithu/RSMD_RESULTS/cdr_rmsd_framework.csv",
+      "cohort": "repository-final-filled",
+      "kind": "structural",
+      "id_column": "design_id",
+      "value_column": "framework_rmsd_angstrom",
+      "domain_column": "domain",
+      "endpoint": "Framework RMSD export",
+      "unit": "angstrom"
+    },
+    {
+      "path": "inputs/sanithu/wilcoxon_task_files/3_data/cdr_rmsd_results_v3.csv",
+      "cohort": "Jacob-repository-Oct25",
+      "kind": "structural",
+      "id_column": "design_id",
+      "value_column": "rmsd_angstrom",
+      "domain_column": "cdr",
+      "endpoint": "CDR RMSD v3 export",
+      "unit": "angstrom"
+    },
+    {
+      "path": "inputs/sanithu/wilcoxon_task_files/3_data/oasis_scores_promb.csv",
+      "cohort": "Jacob-repository-Oct25",
+      "kind": "oasis",
+      "id_column": "design_id",
+      "value_column": "oasis_identity",
+      "domain_column": "cdr",
+      "endpoint": "promb human-oas peptide content (not BioPhi)",
+      "unit": "fraction"
+    },
+    {
+      "path": "inputs/sanithu/Oasis_compute/output/oasis_output_ensemble/9NH7_ensemble_oasis.xlsx",
+      "cohort": "repository-final-filled",
+      "kind": "oasis",
+      "id_column": "Antibody",
+      "value_column": "OASis Identity",
+      "domain_column": null,
+      "endpoint": "BioPhi Overview OASis Identity",
+      "unit": "fraction",
+      "structure": "9NH7",
+      "method": "ensemble",
+      "sheet": "Overview"
+    }
+  ],
+  "missing_artifacts": [
+    "Latest Jacob Drive / rerun delivery: NOT RECOVERED; included Jacob files are the Oct25 repository snapshot, not a later handoff.",
+    "A run-bound measured-sequence manifest for each OASis and structural export, including source input hashes and settings.",
+    "Corrected baseline identity agreed by the team; current repository and Jacob designs disagree.",
+    "PDB atom/residue mapping and run provenance for structural acceptance; CSVs alone do not validate geometry.",
+    "Team-approved endpoint, cohort and statistical comparison policy; no pairing or hypothesis tests are selected here.",
+    "Original paper-era loop-group ablation inputs remain unverified here; current ablation files are NOT selected in this configuration.",
+    "AbLang trained-head provenance and AbMPNN generation provenance are not established by these saved outputs."
+  ],
+  "previous_bundle": null
+}
