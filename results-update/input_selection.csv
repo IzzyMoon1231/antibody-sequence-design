@@ -1,0 +1,15 @@
+type,path,structure,method,cohort,kind,id_column,value_column,domain_column,endpoint,unit,sheet
+fasta,inputs/sanithu/baseline_sequences/baseline_sequences_final_filled/9NH7_EBH.fa,9NH7,baseline,repository-final-filled,,,,,,,
+fasta,inputs/sanithu/ensemble_sequences/ensemble_sequences_final_filled/9NH7.fa,9NH7,ensemble,repository-final-filled,,,,,,,
+fasta,inputs/sanithu/AbMPNN_sequences/9NH7_AbMPNN_100_FINAL_FILLED.fa,9NH7,AbMPNN,repository-final-filled,,,,,,,
+fasta,inputs/sanithu/baseline_sequences/baseline_sequences_final_filled/9NFU.fa,9NFU,baseline,repository-final-filled,,,,,,,
+fasta,inputs/sanithu/ensemble_sequences/ensemble_sequences_final_filled/9NFU.fa,9NFU,ensemble,repository-final-filled,,,,,,,
+fasta,inputs/sanithu/AbMPNN_sequences/9NFU_AbMPNN_100_FINAL_FILLED.fa,9NFU,AbMPNN,repository-final-filled,,,,,,,
+designs,inputs/sanithu/wilcoxon_task_files/3_data/designs_filled.csv,,,Jacob-repository-Oct25,,,,,,,
+metrics,inputs/sanithu/Oasis_compute/output/oasis_proteinmpnn_summary.csv,,,repository-final-filled,oasis,sequence_id,oasis_score,,BioPhi source-selected OASis score,fraction,
+metrics,inputs/sanithu/Oasis_compute/output/oasis_ensemble_summary.csv,,,repository-final-filled,oasis,sequence_id,oasis_identity,,BioPhi Overview OASis Identity,fraction,
+metrics,inputs/sanithu/Oasis_compute/output/oasis_abmpnn_summary.csv,,,repository-final-filled,oasis,sequence_id,oasis_score,,BioPhi source-selected OASis score,fraction,
+metrics,inputs/sanithu/RSMD_RESULTS/cdr_rmsd_framework.csv,,,repository-final-filled,structural,design_id,framework_rmsd_angstrom,domain,Framework RMSD export,angstrom,
+metrics,inputs/sanithu/wilcoxon_task_files/3_data/cdr_rmsd_results_v3.csv,,,Jacob-repository-Oct25,structural,design_id,rmsd_angstrom,cdr,CDR RMSD v3 export,angstrom,
+metrics,inputs/sanithu/wilcoxon_task_files/3_data/oasis_scores_promb.csv,,,Jacob-repository-Oct25,oasis,design_id,oasis_identity,cdr,promb human-oas peptide content (not BioPhi),fraction,
+metrics,inputs/sanithu/Oasis_compute/output/oasis_output_ensemble/9NH7_ensemble_oasis.xlsx,9NH7,ensemble,repository-final-filled,oasis,Antibody,OASis Identity,,BioPhi Overview OASis Identity,fraction,Overview
