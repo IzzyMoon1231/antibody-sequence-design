@@ -2,6 +2,14 @@
 
 Open **[results.ipynb](results.ipynb)** in local JupyterLab or VS Code. Its saved outputs use the included **real public example**. For reading without Python: [GitHub reader](READ_RESULTS.md), or download `results.html` for a self-contained mobile/offline view (GitHub does not host that HTML).
 
+## Reading the four main panels
+
+The notebook and readers show **9NH7 similarity → 9NH7 structure → 9NFU similarity → 9NFU structure**, each followed by a caption calculated from the selected frames and a reflection question. The four plotting cells call `analysis.plot_panel(data, case, metric)` directly; no saved image is loaded. Colors are baseline teal and ensemble rust. Comparable panels share x limits; structural limits include the full range across both selected cases, so changed inputs cannot silently clip plotted intervals. Identity retains its meaningful 0–1 scale with padding at the endpoints.
+
+Structural **dots are medians**, and thick lines are the **middle 50% (IQR), not confidence intervals**. Similarity dots retain each draw, with black median ticks. All loop changes remain visible, including the other heavy/light loops that H3 misses. Captions and counts update with the data; original audit qualifications do not transfer to replacement inputs.
+
+Opt-in exports include `9NH7_similarity`, `9NH7_structure`, `9NFU_similarity`, and `9NFU_structure` as PNG/SVG, plus `figure1` as a compact **2×2 manuscript layout** (cases in columns, similarity/structure in rows, A–D). Both layouts use the same drawing helper and loaded frames. Use the individual panels on a phone; the combined download is intended for manuscript review and may need zoom. `results.html` embeds its reading images for offline use; keep the `figures/` folder alongside it for download links.
+
 ## First run — then your own results
 
 1. Keep this folder together. Use Python 3.11+ with `requirements.txt`. Optional setup in your own environment: `python -m pip install -r requirements.txt`. No model/database downloads or credentials are needed. No dependency installation was performed for this revision.

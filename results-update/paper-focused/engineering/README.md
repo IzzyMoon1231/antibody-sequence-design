@@ -2,7 +2,15 @@
 
 The student-facing result is [READ_RESULTS.md](../READ_RESULTS.md). Engineering checks establish computation and artifact behavior, not independent biological or causal acceptance.
 
-## Current transparent notebook revision
+## Current four-panel revision
+
+The main notebook now has four separately executed case/metric figures and local, data-derived captions. The combined manuscript export is 2×2, using the exact same `draw_panel` helper. `tests/test_panels.py` compares actual collection offsets, interval segments, colors, median lines, labels and limits; checks case/letter titles; mutates structural range and similarity; and checks notebook cell separation plus both reader/export surfaces. Existing numerical, provenance, missing-input, ablation, non-overwriting export and fresh-kernel synthetic controls remain.
+
+Current receipts: `panels-notebook.json`, `panels-refresh.json`, `panels-suite-green.log`. Earlier receipts below remain historical and were not rewritten. The private maintainer-only `refresh_panels.py` command (not part of the public allowlist) refreshes the checked reading snapshot explicitly; it is never called by notebook Run All. It compares every retained table column at 1e-12 and preserves original input/table/expected-CSV bytes. Default notebook export remains off.
+
+Local desktop/phone HTML previews were reviewed, not GitHub's remote renderer. The combined manuscript image is downloadable; on a phone its text needs zoom, so the reading surfaces use individual panels. Publication and independent scientific acceptance are separate from local execution.
+
+## Previous transparent notebook revision
 
 The sections below this notice are **historical receipts**, not descriptions of the
 current updater. Current behavior is select → preview → validate → calculate → plot

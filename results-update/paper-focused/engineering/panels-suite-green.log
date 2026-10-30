@@ -1,0 +1,28 @@
+test_case_interpretation_tracks_tradeoff (test_analysis.AnalysisTests.test_case_interpretation_tracks_tradeoff) ... ok
+test_missing_inputs_invalidate_readers (test_analysis.AnalysisTests.test_missing_inputs_invalidate_readers) ... ok
+test_missing_supporting_loop_invalidates_output (test_analysis.AnalysisTests.test_missing_supporting_loop_invalidates_output) ... ok
+test_notebook_builder_exists (test_analysis.AnalysisTests.test_notebook_builder_exists) ... ok
+test_real_table_matches_checked_arithmetic (test_analysis.AnalysisTests.test_real_table_matches_checked_arithmetic) ... ok
+test_render_real_and_changed_inputs (test_analysis.AnalysisTests.test_render_real_and_changed_inputs) ... ok
+test_review_loop_coverage_and_regeneration (test_analysis.AnalysisTests.test_review_loop_coverage_and_regeneration) ... ok
+test_scientific_gates (test_analysis.AnalysisTests.test_scientific_gates) ... ok
+test_unsupported_structure_error_is_specific (test_analysis.AnalysisTests.test_unsupported_structure_error_is_specific) ... ok
+test_ablation_points_are_reported_pairs (test_figures.FigureTests.test_ablation_points_are_reported_pairs) ... ok
+test_main_draws_and_all_loop_quartiles (test_figures.FigureTests.test_main_draws_and_all_loop_quartiles) ... ok
+test_plain_opening_and_notebook_figure_hierarchy (test_figures.FigureTests.test_plain_opening_and_notebook_figure_hierarchy) ... ok
+test_reading_surfaces_prioritize_main_and_separate_checklist (test_figures.FigureTests.test_reading_surfaces_prioritize_main_and_separate_checklist) ... ok
+test_changed_frames_expand_shared_scales_without_clipping (test_panels.PanelTests.test_changed_frames_expand_shared_scales_without_clipping) ... ok
+test_compact_layout_and_exact_panel_artists (test_panels.PanelTests.test_compact_layout_and_exact_panel_artists) ... ok
+test_four_visible_cells_and_local_interpretations (test_panels.PanelTests.test_four_visible_cells_and_local_interpretations) ... ok
+test_panel_captions_and_exports_follow_changed_data (test_panels.PanelTests.test_panel_captions_and_exports_follow_changed_data) ... ok
+test_changed_inspected_frames_cannot_inherit_original_provenance (test_workflow.WorkflowTests.test_changed_inspected_frames_cannot_inherit_original_provenance) ... ok
+test_fresh_cells_real_and_synthetic_without_saved_figures (test_workflow.WorkflowTests.test_fresh_cells_real_and_synthetic_without_saved_figures) ... ok
+test_local_paths_and_export_preservation (test_workflow.WorkflowTests.test_local_paths_and_export_preservation) ... ok
+test_missing_preview_columns_fail_plainly_at_read (test_workflow.WorkflowTests.test_missing_preview_columns_fail_plainly_at_read) ... ok
+test_notebook_has_visible_read_compute_plot_export_steps (test_workflow.WorkflowTests.test_notebook_has_visible_read_compute_plot_export_steps) ... ok
+test_wrong_scoring_threshold_is_not_compatible (test_workflow.WorkflowTests.test_wrong_scoring_threshold_is_not_compatible) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 47.843s
+
+OK

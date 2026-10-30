@@ -1,0 +1,16 @@
+{
+  "tests_passed": 23,
+  "unchanged_input_table_expected_files": 16,
+  "unchanged_historical_receipts": 9,
+  "executed_code_cells": 18,
+  "embedded_png_outputs": 6,
+  "errors": 0,
+  "visual_review": "Local HTML at desktop 1280px and phone 390px; four individual panels and compact manuscript PNG inspected. No page horizontal overflow. Combined phone download requires zoom. Not a remote GitHub render check.",
+  "source_sha256": {
+    "analysis.py": "8822601472c64ed9eb9b7072a80addc2b5ad0f18617120c7a8d1c931c0e2f4a1",
+    "build_notebook.py": "db8d1ce360c6d076213d39fce27821e9a8dc547ca64e1c562602228de164eeb6",
+    "workflow.py": "f39f6b32a25f619fb7c6b7c29bef1fb4a0890bd8c91c21e909b8003117910911",
+    "results.ipynb": "b70819d3a1d337a6e670a58b957e12295c35f0b19aa9fcd6ecb8ca13be473eaa",
+    "tests/test_panels.py": "846886076b8dc868772522907663f3725284ce5de528bf7886c06225b0ac0ee6"
+  }
+}

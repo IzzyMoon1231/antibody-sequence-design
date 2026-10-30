@@ -9,7 +9,7 @@ class WorkflowTests(unittest.TestCase):
         nb = nbformat.read(ROOT/'results.ipynb', as_version=4)
         sources = '\n'.join(c.source for c in nb.cells if c.cell_type == 'code')
         self.assertNotIn('publish(ROOT)', sources, 'Setup must not publish all outputs')
-        for step in ('read_inputs(', 'validate_inputs(', '.groupby(', 'plot_main(', 'plot_ablation(', 'EXPORT = False', 'export_bundle('):
+        for step in ('read_inputs(', 'validate_inputs(', '.groupby(', 'plot_panel(', 'plot_ablation(', 'EXPORT = False', 'export_bundle('):
             self.assertIn(step, sources)
         self.assertNotIn('Image(', sources)
 
@@ -37,7 +37,7 @@ class WorkflowTests(unittest.TestCase):
             nb=build_notebook.execute(build_notebook.notebook(),dest)
             self.assertEqual(before,snapshot(dest), 'Run All with EXPORT=False wrote a file')
             images=lambda n:[o['data']['image/png'] for c in n.cells if c.cell_type=='code' for o in c.outputs if 'image/png' in o.get('data',{})]
-            self.assertEqual(len(images(nb)),3)
+            self.assertEqual(len(images(nb)),6)
             # SYNTHETIC subset/reversal control: not new research observations.
             loaded=workflow.read_inputs(dest)
             for row in loaded['selection'].itertuples():
@@ -60,18 +60,18 @@ class WorkflowTests(unittest.TestCase):
             a.to_csv(dest/'own-ablation.csv',index=False)
             chosen=build_notebook.notebook()
             chosen.cells[2].source=chosen.cells[2].source.replace("'inputs/cdr_rmsd_results.csv'","'own-structure.csv'").replace("'inputs/ablation_scores.csv'","'own-ablation.csv'")
-            probe=nbformat.v4.new_code_cell("import numpy as np\nassert not data['original_inputs']\nassert table.baseline_n.eq(7).all() and table.ensemble_n.eq(5).all()\nassert table.biophi_heavy_difference_medians.lt(0).all()\nassert 'lower heavy-domain' in readout\nfor i, st in enumerate(analysis.CASES):\n    for j, method in enumerate(analysis.METHODS):\n        expected = main.query('structure == @st and method == @method').oasis.to_numpy()\n        np.testing.assert_allclose(main_figure.axes[2*i].collections[2*j].get_offsets()[:,0], expected)\n    for j, condition in enumerate(('cdrh3','others')):\n        expected = pairs.loc[(st,condition)].difference_pp.to_numpy()\n        np.testing.assert_allclose(ablation_figure.axes[i].collections[2*j].get_offsets()[:,0], expected)\nassert ablation_table.n_pairs.eq(6).all()\nassert ablation_table.query(\"domain == 'H'\").mean_difference.lt(0).all()")
+            probe=nbformat.v4.new_code_cell("import numpy as np\nassert not data['original_inputs']\nassert table.baseline_n.eq(7).all() and table.ensemble_n.eq(5).all()\nassert table.biophi_heavy_difference_medians.lt(0).all()\nassert 'lower heavy-domain' in readout\nfor i, st in enumerate(analysis.CASES):\n    for j, method in enumerate(analysis.METHODS):\n        expected = main.query('structure == @st and method == @method').oasis.to_numpy()\n        np.testing.assert_allclose(globals()['panel_'+st+'_similarity'].axes[0].collections[2*j].get_offsets()[:,0], expected)\n    for j, condition in enumerate(('cdrh3','others')):\n        expected = pairs.loc[(st,condition)].difference_pp.to_numpy()\n        np.testing.assert_allclose(ablation_figure.axes[i].collections[2*j].get_offsets()[:,0], expected)\nassert ablation_table.n_pairs.eq(6).all()\nassert ablation_table.query(\"domain == 'H'\").mean_difference.lt(0).all()")
             chosen.cells.append(probe)
             before=snapshot(dest)
             changed=build_notebook.execute(chosen,dest)
             self.assertEqual(before,snapshot(dest))
             self.assertNotEqual(images(nb)[0],images(changed)[0])
-            self.assertNotEqual(images(nb)[2],images(changed)[2])
+            self.assertNotEqual(images(nb)[5],images(changed)[5])
             optional=build_notebook.notebook()
             optional.cells[2].source=chosen.cells[2].source.replace("ABLATION = 'own-ablation.csv'", "ABLATION = None")
             before=snapshot(dest)
             optional_run=build_notebook.execute(optional,dest)
-            self.assertEqual(len(images(optional_run)),2)
+            self.assertEqual(len(images(optional_run)),5)
             self.assertEqual(before,snapshot(dest))
             # Exercise the actual last cell with explicit synthetic reasoning notes.
             for name in ('README.md','SOURCES.md','build_notebook.py'):

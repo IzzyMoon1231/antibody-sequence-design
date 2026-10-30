@@ -11,11 +11,11 @@ class FigureTests(unittest.TestCase):
         data=analysis.load(ROOT)
         fig=analysis.plot_main(data)
         for i,st in enumerate(analysis.CASES):
-            ax=fig.axes[2*i]
+            ax=fig.axes[i]
             for j,m in enumerate(analysis.METHODS):
                 expected=data['main'].query('structure==@st and method==@m').oasis.to_numpy()
                 np.testing.assert_allclose(ax.collections[j*2].get_offsets()[:,0],expected)
-            ax=fig.axes[2*i+1]
+            ax=fig.axes[2+i]
             for j,m in enumerate(analysis.METHODS):
                 loops=['H1','H2','H3']+(['L1','L2','L3'] if st=='9NFU' else [])
                 expected=[data['loops'].query('structure==@st and method==@m and cdr==@c').rmsd_angstrom.quantile([.25,.5,.75]).to_numpy() for c in loops]

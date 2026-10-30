@@ -118,35 +118,90 @@ LOOP_CAPTION='All selected baseline/ensemble loops, marginal medians in Å, with
 PAPER_CHANGES='Use Table 1 and the complete supporting loop table to replace stale humanness and loop values; retain the heterogeneous loop-level structural costs, not universal preservation, foldability or therapeutic claims. Describe deposited-reference, motif-defined N/CA/C domain fits and whole heavy-domain Identity consistently. Keep Figure 2 descriptive, with the joint heavy/light other-CDR condition and unchanged-light control; remove per-residue or cross-chain efficiency claims. Remove index-paired Wilcoxon and inherited significance claims, completed contact-preservation claims, and structural-ablation comparisons without matching outputs. H3 is a focused endpoint, not an authenticated prospective designation. Two fixed cases are not a format ablation. These are update instructions, not certification that a manuscript has been edited.'
 
 
-def plot_main(data):
-    import matplotlib.pyplot as plt
-    plt.rcParams.update({'font.size':14,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'})
-    fig,axes=plt.subplots(4,1,figsize=(6.2,12),layout='constrained',gridspec_kw={'height_ratios':[1,1.4,1,2]})
-    colors=['#287c8e','#bc643f']
-    for i,st in enumerate(CASES):
-        ax=axes[2*i]
-        for j,(m,color) in enumerate(zip(METHODS,colors)):
-            v=data['main'].query('structure==@st and method==@m').oasis.to_numpy()
-            y=j+np.linspace(-.16,.16,len(v))
-            ax.scatter(v,y,s=12,alpha=.20,color=color)
+COLORS = ('#287c8e', '#bc643f')
+
+
+def panel_limits(data):
+    """Same scales across cases; include the full selected structural range."""
+    return {'similarity': (-.025, 1.025),
+            'structure': (-.02 * max(1., data['loops'].rmsd_angstrom.max()),
+                          1.06 * max(1., data['loops'].rmsd_angstrom.max()))}
+
+
+def draw_panel(ax, data, case, metric):
+    """Draw from loaded frames, never a disk image. Shared by both layouts."""
+    if case not in CASES or metric not in ('similarity', 'structure'):
+        raise ValueError('Choose a supported case and similarity or structure')
+    if metric == 'similarity':
+        for j,(m,color) in enumerate(zip(METHODS,COLORS)):
+            v=data['main'].query('structure==@case and method==@m').oasis.to_numpy()
+            ax.scatter(v,j+np.linspace(-.16,.16,len(v)),s=12,alpha=.20,color=color)
             q=np.quantile(v,[.25,.5,.75])
             ax.hlines(j,q[0],q[2],color=color,lw=5)
             ax.plot(q[1],j,'|',color='black',ms=15,mew=2)
-        ax.set(yticks=[0,1],yticklabels=METHODS,xlim=(0,1),ylim=(1.5,-.5),xlabel='Heavy-domain BioPhi Identity\n(fraction)')
-        ax.set_title(st+' · sequence similarity',loc='left',weight='bold')
-        ax=axes[2*i+1]
-        loops=['H1','H2','H3']+(['L1','L2','L3'] if st=='9NFU' else [])
-        for j,(m,color) in enumerate(zip(METHODS,colors)):
-            q=np.array([data['loops'].query('structure==@st and method==@m and cdr==@c').rmsd_angstrom.quantile([.25,.5,.75]).to_numpy() for c in loops])
+        ax.set(yticks=[0,1],yticklabels=METHODS,ylim=(1.5,-.5),
+               xlabel='Heavy-domain BioPhi Identity (fraction)')
+        title='sequence similarity'
+    else:
+        loops=['H1','H2','H3']+(['L1','L2','L3'] if case=='9NFU' else [])
+        for j,(m,color) in enumerate(zip(METHODS,COLORS)):
+            q=np.array([data['loops'].query('structure==@case and method==@m and cdr==@c').rmsd_angstrom.quantile([.25,.5,.75]).to_numpy() for c in loops])
             y=np.arange(len(loops))+(j-.5)*.25
             ax.hlines(y,q[:,0],q[:,2],color=color,lw=3)
             ax.scatter(q[:,1],y,color=color,s=35,label=m,zorder=3)
-        ax.set(yticks=range(len(loops)),yticklabels=loops,ylim=(len(loops)-.5,-.5),xlabel='Domain-local backbone RMSD (Å)')
-        ax.set_xlim(left=0); ax.set_title(st+' · every measured loop',loc='left',weight='bold')
-        ax.legend(loc='upper right',fontsize=12)
-    for ax in axes:
-        ax.spines[['top','right']].set_visible(False); ax.grid(axis='x',alpha=.15)
+        ax.set(yticks=range(len(loops)),yticklabels=loops,ylim=(len(loops)-.5,-.5),
+               xlabel='Domain-local backbone RMSD (Å)')
+        ax.legend(loc='upper right',fontsize=10)
+        title='every measured loop'
+    ax.set_xlim(panel_limits(data)[metric])
+    ax.set_title(case+' · '+title,loc='left',weight='bold',fontsize=13)
+    ax.spines[['top','right']].set_visible(False)
+    ax.grid(axis='x',alpha=.15)
+    return ax
+
+
+def plot_panel(data, case, metric):
+    """One notebook output, explicit case and endpoint; no file writes."""
+    import matplotlib.pyplot as plt
+    with plt.rc_context({'font.size':12,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'}):
+        fig,ax=plt.subplots(figsize=(6.2,3.2 if metric=='similarity' else 4.3),layout='constrained')
+        draw_panel(ax,data,case,metric)
     return fig
+
+
+def plot_main(data):
+    """Compact manuscript layout: cases in columns, metrics in rows."""
+    import matplotlib.pyplot as plt
+    with plt.rc_context({'font.size':11,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'}):
+        fig,axes=plt.subplots(2,2,figsize=(12,7.2),layout='constrained',gridspec_kw={'height_ratios':[1,1.5]})
+        for row,metric in enumerate(('similarity','structure')):
+            for col,case in enumerate(CASES):
+                ax=draw_panel(axes[row,col],data,case,metric)
+                ax.set_title(chr(65+2*row+col)+'  '+ax.get_title(loc='left'),loc='left',weight='bold',fontsize=13)
+    return fig
+
+
+def panel_readout(data, case, metric):
+    """Case-local descriptive caption, recalculated for every selected input."""
+    if case not in CASES or metric not in ('similarity','structure'):
+        raise ValueError('Choose a supported case and similarity or structure')
+    g=data['main'].query('structure==@case')
+    counts=g.groupby('method').size()
+    prefix=f"{case}: baseline n={counts['baseline']}, ensemble n={counts['ensemble']}. "
+    if metric=='similarity':
+        med=g.groupby('method').oasis.median()
+        return prefix+f"Heavy-domain Identity medians: {med['baseline']:.4f} → {med['ensemble']:.4f}; ensemble is {direction(med['ensemble']-med['baseline'])} (Δ {med['ensemble']-med['baseline']:+.4f}). Light dots are all draws; black ticks are medians; thick lines are the middle 50%, not confidence intervals. This is repertoire similarity, not immune response. "+('The scFv score here is heavy-only, not a pooled VH/VL endpoint. ' if case=='9NFU' else '')+'Reflect: does the structural panel support the same favorable direction?'
+    loops, all_loop_readout=loop_summary(data)
+    z=loops[loops.structure==case]
+    details='; '.join(f'{r.cdr} {r.baseline_median_A:.3f} → {r.ensemble_median_A:.3f} (Δ {r.ensemble_median_A-r.baseline_median_A:+.3f})' for r in z.itertuples())
+    h=z[z.cdr=='H3'].iloc[0]
+    result=prefix+'Loop median RMSD in Å, baseline → ensemble: '+details+'. Structural dots are medians; lines are the middle 50%, not confidence intervals. '
+    if case=='9NFU':
+        result+=all_loop_readout+' Reflect: which other loops change the conclusion you would draw from H3 alone?'
+    else:
+        delta=g.groupby('method').oasis.median()
+        result+=f"The ensemble has {direction(delta['ensemble']-delta['baseline'])} similarity and {direction(h.ensemble_median_A-h.baseline_median_A)} H3 RMSD. Reflect: is this a similarity/structure trade-off in these inputs? It is not evidence of preserved binding."
+    return result
 
 
 def plot_ablation(ablation, observations):
@@ -221,7 +276,9 @@ def publish(root, data=None):
     bar_values=[float(line.get_xdata()[0]) for ax in fig.axes for line in ax.lines[1:]]
     for ext in ['png','svg']: fig.savefig(root/f'figures/figure2.{ext}',dpi=170,metadata={'Date':None} if ext=='svg' else None)
     plt.close(fig)
-    for name, figure in [('figure1',plot_main(data)),('experiment_map',plot_experiment_map(data))]:
+    figures = [('figure1',plot_main(data)),('experiment_map',plot_experiment_map(data))]
+    figures += [(f'{st}_{metric}', plot_panel(data,st,metric)) for st in CASES for metric in ('similarity','structure')]
+    for name, figure in figures:
         for ext in ('png','svg'):
             figure.savefig(root/f'figures/{name}.{ext}',dpi=170,metadata={'Date':None} if ext=='svg' else None)
         plt.close(figure)
@@ -244,7 +301,7 @@ def publish(root, data=None):
     main_caption=f'Light sequence dots retain all observed draws ({n}); black ticks mark medians. Structural dots are group medians for every measured loop. Thick lines show the middle half (25th–75th percentiles), not confidence intervals. All draws keep their original weight, including repeated sequences. Baseline and ensemble are separate collections: no row-pairing or connecting designs. Higher Identity means more human-repertoire sequence similarity; lower RMSD means closer to the deposited reference. These are whole heavy-domain scores and domain-local loop distances, not immune-response or binding measurements.'
     map_caption='Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Arrows show which measurements belong to each collection, not a causal effect.'
     (root/'AUTHOR_CHECKLIST.md').write_text('# Author checklist — manuscript integration\n\n'+PAPER_CHANGES+'\n\n- [ ] Replace stale values using [Table 1](tables/table1.csv) and [all loops](tables/loops.csv).\n- [ ] Use [Figure 1](figures/figure1.svg) for the main question and [Figure 2](figures/figure2.svg) for the separate ablation.\n- [ ] Keep conventions in [Sources and methods](SOURCES.md); keep the experiment map in the notebook unless the paper needs it.\n- [ ] Review all claims against the qualifications above; notebook completion is not manuscript endorsement.\n')
-    md='# Repertoire similarity and structural cost\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n'+map_caption+'\n\n![Experiment map](figures/experiment_map.png)\n\n## Figure 1 · Sequence similarity and every measured loop\n\n'+main_caption+'\n\n![Figure 1. Main distributions and all-loop comparison](figures/figure1.png)\n\n'+loop_readout+'\n\n## Table 1 · Numerical reference\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n## Figure 2 · Where are differences seen in the separate ablation?\n\n'+abcaption+'\n\n![Figure 2. Reported seed-pair differences](figures/figure2.png)\n\n'+regions+'\n\n'+light_note+'\n\n## What this evidence supports\n\n'+LIMIT+'\n\n'+link+'\n\n[Spread and confidence details](APPENDIX.md) · [Sources and methods](SOURCES.md) · [Update guide](README.md) · [Executed notebook](results.ipynb) · [Author checklist — Paper changes](AUTHOR_CHECKLIST.md) · [Engineering checks](engineering/README.md)\n'
+    md='# Repertoire similarity and structural cost\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n'+map_caption+'\n\n![Experiment map](figures/experiment_map.png)\n\n## Figure 1 · Sequence similarity and every measured loop\n\n'+main_caption+'\n\n'+''.join(f'### {st} · {metric}\n\n![{st} {metric}](figures/{st}_{metric}.png)\n\n'+panel_readout(data,st,metric)+'\n\n' for st in CASES for metric in ('similarity','structure'))+'[Download compact 2×2 Figure 1 (SVG)](figures/figure1.svg) · [PNG](figures/figure1.png)\n\n'+loop_readout+'\n\n## Table 1 · Numerical reference\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n## Figure 2 · Where are differences seen in the separate ablation?\n\n'+abcaption+'\n\n![Figure 2. Reported seed-pair differences](figures/figure2.png)\n\n'+regions+'\n\n'+light_note+'\n\n## What this evidence supports\n\n'+LIMIT+'\n\n'+link+'\n\n[Spread and confidence details](APPENDIX.md) · [Sources and methods](SOURCES.md) · [Update guide](README.md) · [Executed notebook](results.ipynb) · [Author checklist — Paper changes](AUTHOR_CHECKLIST.md) · [Engineering checks](engineering/README.md)\n'
     (root/'READ_RESULTS.md').write_text(md)
     appendix='# Supporting analyses\n\nReturn to [Table 1 and Figure 1](READ_RESULTS.md). These plots show every retained main design; low-confidence designs are not removed. Read ECDFs as the fraction of designs at or below each x-axis value, not uncertainty intervals.\n\n'
     appendix+='## Spread and confidence by case\n\n'+'\n\n'.join(cases)+'\n\n'+SCOPE+'\n\n'
@@ -257,7 +314,7 @@ def publish(root, data=None):
     def image(name,alt):
         encoded=base64.b64encode((root/'figures'/name).read_bytes()).decode()
         return f'<img alt="{html.escape(alt)}" src="data:image/png;base64,{encoded}">'
-    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+image('figure1.png','Sequence distributions and all-loop structural medians')+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+para(regions)+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
+    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+''.join('<h3>'+st+' · '+metric+'</h3>'+image(f'{st}_{metric}.png',f'{st}_{metric}')+para(panel_readout(data,st,metric)) for st in CASES for metric in ('similarity','structure'))+'<p><a href="figures/figure1.svg">Download compact 2×2 Figure 1 (SVG)</a> · <a href="figures/figure1.png">PNG</a></p>'+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+para(regions)+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
     css='body{margin:0;background:#f7f5ef;color:#192a30;font:17px/1.65 system-ui,sans-serif}header,main{max-width:850px;margin:auto;padding:24px}header{border-bottom:3px solid #287c8e}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12}h2{font-size:1.35rem;margin-top:2em;line-height:1.3}.eyebrow{color:#287c8e;font-size:13px;text-transform:uppercase;letter-spacing:.08em}img{width:100%;height:auto;margin:20px 0}table{border-collapse:collapse;font-size:14px;min-width:650px}td,th{padding:12px;border-bottom:1px solid #bcc9c9;text-align:left}.table-scroll{overflow-x:auto}details{padding:16px;background:#e8efec}summary{cursor:pointer;font-weight:700}a{color:#116779}nav{margin:30px 0}@media(max-width:450px){header,main{padding:18px}body{font-size:16px}}'
     (root/'results.html').write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Repertoire similarity and structural cost</title><style>'+css+'</style></head><body>'+body+'</body></html>')
     (root/'engineering/run.json').write_text(json.dumps({'input_sha256':data['hashes'],'pinned_inputs_unchanged':data['original_inputs'],'main_rows':len(data['main']),'ablation_rows':total,'bar_values_percentage_points':bar_values,'computation':'retained-output summaries; no folding, scoring or coordinate replay'},indent=2)+'\n')

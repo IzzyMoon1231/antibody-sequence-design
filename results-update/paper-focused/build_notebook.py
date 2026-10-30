@@ -22,8 +22,20 @@ def notebook():
         code("data = None\ndata = validate_inputs(loaded)\ndisplay(Markdown(status(data)))\ndisplay(data['main'].groupby(['structure','method']).agg(\n    draws=('index','size'), heavy_median=('oasis','median'),\n    H3_below70=('low_confidence','sum')))\nprint('Scored VH/FASTA and complete-loop checks passed. Main arms remain unpaired.')"),
         md('## 4 · Predict, then calculate\n\n**Before running:** predict which arm has the higher heavy-domain score in each case. Does a higher similarity score force lower RMSD?\n\nThe code first groups actual observations to show medians and counts. A delta is **ensemble median − baseline median**, not the median of paired differences. All draws (including repeated sequences and low-confidence predictions) keep their weight. These are descriptive summaries, not confidence intervals or significance tests.'),
         code("main = data['main']\ngrouped = main.groupby(['structure','method'])[['oasis','rmsd_angstrom']].median()\ndisplay(grouped.rename(columns={'oasis':'Heavy Identity median','rmsd_angstrom':'H3 median (Å)'}))\ndeltas = grouped.xs('ensemble',level='method') - grouped.xs('baseline',level='method')\ndisplay(deltas.rename(columns={'oasis':'Δ marginal Identity median','rmsd_angstrom':'Δ marginal H3 median (Å)'}))\ntable, ablation_table = analysis.summarize(data)  # same formulas + separate domain denominators\nassert table.set_index('structure').biophi_heavy_difference_medians.sort_index().equals(deltas.oasis.sort_index())\nloops, loop_readout = analysis.loop_summary(data)\ndisplay(analysis.table_display(table))"),
-        md('## 5 · Figure 1: similarity and **every** measured loop\n\nThis plot is built now from `data`, not a saved PNG. Light dots retain each heavy-domain score; black ticks are medians. Structural dots are loop medians; thick lines are the middle half (IQR), **not confidence intervals**. Higher Identity means greater repertoire similarity; higher RMSD means more displacement from the deposited reference after a domain-local backbone fit. Main groups are unpaired. H3 alone cannot establish whole-scFv preservation.'),
-        code("main_figure = analysis.plot_main(data)\ndisplay(main_figure)\nplt.close(main_figure)\nreadout, case_details, region_readout = analysis.describe(data, table, ablation_table)\ndisplay(Markdown('**Computed observations (selected values):** ' + readout + '\\n\\n' + loop_readout))"),
+        md('## 5 · Four views of the main comparison\n\nEach panel is drawn from the loaded frames, not a PNG. Colors and scales agree across cases. Structural dots are medians; lines show the middle 50%, not confidence intervals. Main arms remain unpaired. The optional export also creates a compact 2×2 manuscript figure: cases in columns, metrics in rows.'),
+        md('### 9NH7 · Does ensemble increase heavy-domain repertoire similarity?'),
+        code("panel_9NH7_similarity = analysis.plot_panel(data, '9NH7', 'similarity')\ndisplay(panel_9NH7_similarity)\nplt.close(panel_9NH7_similarity)"),
+        code("display(Markdown(analysis.panel_readout(data, '9NH7', 'similarity')))"),
+        md('### 9NH7 · What structural trade-off accompanies the similarity result?'),
+        code("panel_9NH7_structure = analysis.plot_panel(data, '9NH7', 'structure')\ndisplay(panel_9NH7_structure)\nplt.close(panel_9NH7_structure)"),
+        code("display(Markdown(analysis.panel_readout(data, '9NH7', 'structure')))"),
+        md('### 9NFU · Does the heavy-only similarity pattern recur in the scFv case?'),
+        code("panel_9NFU_similarity = analysis.plot_panel(data, '9NFU', 'similarity')\ndisplay(panel_9NFU_similarity)\nplt.close(panel_9NFU_similarity)"),
+        code("display(Markdown(analysis.panel_readout(data, '9NFU', 'similarity')))"),
+        md('### 9NFU · What does H3 miss about the other heavy and light loops?'),
+        code("panel_9NFU_structure = analysis.plot_panel(data, '9NFU', 'structure')\ndisplay(panel_9NFU_structure)\nplt.close(panel_9NFU_structure)"),
+        code("display(Markdown(analysis.panel_readout(data, '9NFU', 'structure')))"),
+        code("readout, case_details, region_readout = analysis.describe(data, table, ablation_table)"),
         md('### Check your prediction\n\nWrite two sentences: (1) a numerical observation for one case, (2) a limitation that changes its interpretation. Compare H3 with the other loops before calling a structural cost small.\n\n**Worked example for the included dataset only:** “The 9NH7 ensemble heavy-domain median is higher, but its H3 median RMSD is also higher. This is a similarity/structure trade-off in retained predictions, not evidence of preserved binding.” Verify both directions against your current table; do **not** reuse this sentence if your values differ.\n\n**Hypothesis:** a protocol difference might contribute to the score shift; these summaries do not identify the cause. **Unestablished claims:** reduced immunogenicity, preserved binding, structural non-inferiority, a general antibody-format effect, or AbLang-only causation.'),
         md('## 6 · Supporting evidence: spread and confidence\n\nRead every loop, not only a favorable endpoint. Mean loop pLDDT < 70 flags low confidence; it does not establish why a structure changed and does not remove a draw. Domain-local fits omit relative VH/VL orientation. Mapping is operational/motif-based, not independently validated biological numbering.'),
         code("display(loops.round(4))\nfor detail in case_details:\n    display(Markdown(detail))\nmap_figure = analysis.plot_experiment_map(data)\ndisplay(map_figure)\nplt.close(map_figure)"),
@@ -60,7 +72,7 @@ def build(root):
     report={'clean_kernel':'PASS','executed_code_cells':len(codes),'embedded_png_outputs':sum('image/png' in o.get('data',{}) for c in codes for o in c.outputs),'error_outputs':0,'analysis_export_enabled':False}
     assert all(c.execution_count is not None for c in codes)
     assert not any(o.output_type=='error' for c in codes for o in c.outputs)
-    (root/'engineering/transparent-notebook.json').write_text(json.dumps(report,indent=2)+'\n')
+    (root/'engineering/panels-notebook.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(report))
 
 if __name__=='__main__': build(Path(__file__).resolve().parent)
