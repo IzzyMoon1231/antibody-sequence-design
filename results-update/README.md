@@ -1,6 +1,6 @@
 # UIRJ results — start with the scientific analysis
 
-**The current recommended notebook is [paper-focused/results.ipynb](paper-focused/results.ipynb). Start with [its scientific reading page](paper-focused/READ_RESULTS.md): one main table, one ablation figure, and the interpretation.**
+**The current recommended notebook is [paper-focused/results.ipynb](paper-focused/results.ipynb). Start with [its scientific reading page](paper-focused/READ_RESULTS.md): the main-results figure, a separate ablation figure, and the interpretation.**
 
 The file-by-file explorer below is retained as historical diagnostic material. Its blanket sequence-linkage warnings are superseded for the selected, checked inputs in the new analysis.
 

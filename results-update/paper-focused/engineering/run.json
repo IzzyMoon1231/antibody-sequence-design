@@ -15,10 +15,10 @@
   "main_rows": 400,
   "ablation_rows": 800,
   "bar_values_percentage_points": [
-    5.869158878504673,
-    15.093457943925234,
+    5.869158878504674,
+    15.093457943925237,
     5.54867256637168,
-    8.504424778761061
+    8.504424778761063
   ],
   "computation": "retained-output summaries; no folding, scoring or coordinate replay"
 }

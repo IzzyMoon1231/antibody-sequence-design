@@ -121,7 +121,9 @@ def direction(value):
 
 
 def describe(data, table, ablation):
-    answers=[]; cases=[]; regions=[]
+    directions={direction(v) for v in table.biophi_heavy_difference_medians}
+    opening=(f'Ensemble sequences score {next(iter(directions))} on human-antibody sequence similarity in both examples (whole heavy-domain medians).' if len(directions)==1 else 'The sequence-similarity comparison differs between the two examples.')
+    answers=[opening]; cases=[]; regions=[]
     for t in table.itertuples():
         answers.append(f'{t.structure}: {direction(t.biophi_heavy_difference_medians)} heavy-domain repertoire similarity and {direction(t.h3_difference_medians_A)} H3 backbone RMSD in the ensemble median.')
         g=data['main'].query('structure==@t.structure')
@@ -171,27 +173,71 @@ def loop_summary(data):
 
 
 LOOP_CAPTION='All selected baseline/ensemble loops, marginal medians in Å, with draw counts and mean loop pLDDT below-70 counts. No confidence filtering is applied. N/CA/C RMSD follows motif-defined spans after separate domain framework fits to deposited reference chains E (9NH7) and C (9NFU); CDR atoms are excluded from fitting. This does not measure relative VH/VL orientation or whole-scFv preservation.'
-PAPER_CHANGES='Use Table 1 and the complete supporting loop table to replace stale humanness and loop values; retain the heterogeneous loop-level structural costs, not universal preservation, foldability or therapeutic claims. Describe deposited-reference, motif-defined N/CA/C domain fits and whole heavy-domain Identity consistently. Keep Figure 1 descriptive, with the joint heavy/light other-CDR condition and unchanged-light control; remove per-residue or cross-chain efficiency claims. Remove index-paired Wilcoxon and inherited significance claims, completed contact-preservation claims, and structural-ablation comparisons without matching outputs. H3 is a focused endpoint, not an authenticated prospective designation. Two fixed cases are not a format ablation. These are update instructions, not certification that a manuscript has been edited.'
+PAPER_CHANGES='Use Table 1 and the complete supporting loop table to replace stale humanness and loop values; retain the heterogeneous loop-level structural costs, not universal preservation, foldability or therapeutic claims. Describe deposited-reference, motif-defined N/CA/C domain fits and whole heavy-domain Identity consistently. Keep Figure 2 descriptive, with the joint heavy/light other-CDR condition and unchanged-light control; remove per-residue or cross-chain efficiency claims. Remove index-paired Wilcoxon and inherited significance claims, completed contact-preservation claims, and structural-ablation comparisons without matching outputs. H3 is a focused endpoint, not an authenticated prospective designation. Two fixed cases are not a format ablation. These are update instructions, not certification that a manuscript has been edited.'
 
 
-def plot_ablation(ablation):
-    import matplotlib
-    matplotlib.use('Agg')
+def plot_main(data):
     import matplotlib.pyplot as plt
-    plt.rcParams.update({'font.size':11,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'})
-    fig,axes=plt.subplots(2,1,figsize=(6.2,7.2),layout='constrained')
-    all_values=ablation[ablation.domain=='H'].mean_gain_percentage_points
-    low=min(0,float(all_values.min())); high=max(0,float(all_values.max())); pad=max(high-low,1)*.22
+    plt.rcParams.update({'font.size':14,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'})
+    fig,axes=plt.subplots(4,1,figsize=(6.2,12),layout='constrained',gridspec_kw={'height_ratios':[1,1.4,1,2]})
+    colors=['#287c8e','#bc643f']
+    for i,st in enumerate(CASES):
+        ax=axes[2*i]
+        for j,(m,color) in enumerate(zip(METHODS,colors)):
+            v=data['main'].query('structure==@st and method==@m').oasis.to_numpy()
+            y=j+np.linspace(-.16,.16,len(v))
+            ax.scatter(v,y,s=12,alpha=.20,color=color)
+            q=np.quantile(v,[.25,.5,.75])
+            ax.hlines(j,q[0],q[2],color=color,lw=5)
+            ax.plot(q[1],j,'|',color='black',ms=15,mew=2)
+        ax.set(yticks=[0,1],yticklabels=METHODS,xlim=(0,1),ylim=(1.5,-.5),xlabel='Heavy-domain BioPhi Identity\n(fraction)')
+        ax.set_title(st+' · sequence similarity',loc='left',weight='bold')
+        ax=axes[2*i+1]
+        loops=['H1','H2','H3']+(['L1','L2','L3'] if st=='9NFU' else [])
+        for j,(m,color) in enumerate(zip(METHODS,colors)):
+            q=np.array([data['loops'].query('structure==@st and method==@m and cdr==@c').rmsd_angstrom.quantile([.25,.5,.75]).to_numpy() for c in loops])
+            y=np.arange(len(loops))+(j-.5)*.25
+            ax.hlines(y,q[:,0],q[:,2],color=color,lw=3)
+            ax.scatter(q[:,1],y,color=color,s=35,label=m,zorder=3)
+        ax.set(yticks=range(len(loops)),yticklabels=loops,ylim=(len(loops)-.5,-.5),xlabel='Domain-local backbone RMSD (Å)')
+        ax.set_xlim(left=0); ax.set_title(st+' · every measured loop',loc='left',weight='bold')
+        ax.legend(loc='upper right',fontsize=12)
+    for ax in axes:
+        ax.spines[['top','right']].set_visible(False); ax.grid(axis='x',alpha=.15)
+    return fig
+
+
+def plot_ablation(ablation, observations):
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({'font.size':14,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'})
+    fig,axes=plt.subplots(2,1,figsize=(6.2,6.5),layout='constrained')
     for ax,st in zip(axes,CASES):
-        z=ablation[(ablation.structure==st)&(ablation.domain=='H')].set_index('condition').loc[['cdrh3','others']]
-        values=z.mean_gain_percentage_points.to_numpy()
-        bars=ax.bar(['H3 only','H1/H2' if st=='9NH7' else 'H1/H2 + L1/L2/L3'],values,color=['#287c8e','#bc643f'],width=.55)
-        ax.axhline(0,color='#555555',linewidth=.7)
-        ax.bar_label(bars,labels=[f'{v:+.2f} pp' for v in values],padding=5)
-        ax.set_ylim(low-pad if low < 0 else 0,high+pad if high > 0 else 0)
-        ax.set_title(st+' · heavy domain',loc='left',weight='bold')
-        ax.set_ylabel('Heavy OASis Identity difference\n(percentage points)')
-        ax.spines[['right','top']].set_visible(False)
+        ax.axvline(0,color='#555555',linewidth=.8)
+        for j,cond in enumerate(('cdrh3','others')):
+            w=observations.query('structure==@st and condition==@cond').pivot(index='seed',columns='method',values='Heavy OASis Identity')
+            v=100*(w.ensemble-w.baseline).to_numpy()
+            ax.scatter(v,j+np.linspace(-.18,.18,len(v)),s=16,alpha=.25,color='#287c8e')
+            q=np.quantile(v,[.25,.75])
+            ax.hlines(j,q[0],q[1],color='#287c8e',lw=4)
+            ax.plot(v.mean(),j,'D',color='#172f38',ms=7)
+            ax.annotate(f'mean {v.mean():+.2f} pp',(v.mean(),j),xytext=(0,22),textcoords='offset points',ha='center',fontsize=12)
+        ax.set(yticks=[0,1],yticklabels=['H3 only','H1/H2' if st=='9NH7' else 'H1/H2 +\nL1/L2/L3'],ylim=(1.55,-.65),xlabel='Heavy-domain Identity difference\n(pp; ensemble minus baseline)')
+        ax.set_title(st+' · separate ablation',loc='left',weight='bold')
+        ax.spines[['top','right']].set_visible(False); ax.grid(axis='x',alpha=.15)
+        ax.margins(x=.18)
+    return fig
+
+
+def plot_experiment_map(data):
+    import matplotlib.pyplot as plt
+    fig,ax=plt.subplots(figsize=(6.2,5.2),layout='constrained')
+    ax.set(xlim=(0,1),ylim=(0,1)); ax.axis('off')
+    n=len(data['main']); a=len(data['ablation'])
+    for y,title,source,out in [(.96,'Main comparison',f'All-loop redesign · {n} draws total\nBaseline and ensemble: separate collections','Heavy-domain similarity + loop RMSD\nCompare groups, not row-matched designs'),(.45,'Separate ablation',f'H3-only or other-loop redesign · {a} draws\nBaseline and ensemble: reported seed pairs','Heavy/light similarity, scored separately\nNo structural ablation measurements')]:
+        ax.text(.03,y,title,fontsize=14,weight='bold',va='top')
+        ax.text(.5,y-.13,source,ha='center',va='center',fontsize=11,bbox=dict(boxstyle='round,pad=.7',fc='#e9f1f2',ec='#287c8e'))
+        ax.annotate('',xy=(.5,y-.27),xytext=(.5,y-.21),arrowprops=dict(arrowstyle='->',color='#287c8e',lw=1.5))
+        ax.text(.5,y-.33,out,ha='center',va='center',fontsize=11)
     return fig
 
 
@@ -203,10 +249,10 @@ def markdown_table(df):
     return '| '+' | '.join(df.columns)+' |\n| '+' | '.join(['---']*len(df.columns))+' |\n'+'\n'.join('| '+' | '.join(map(str,row))+' |' for row in df.itertuples(index=False,name=None))
 
 
-QUESTION='Does adding AbLang improve human-repertoire similarity without a structural cost?'
+QUESTION='Are the sequences more human-like, and what happens to their predicted structures?'
 SCOPE='Table 1 compares independently sampled all-loop baseline and ensemble protocol cohorts, not paired seeds. Heavy OASis Identity is the whole numbered heavy-domain fraction of qualifying overlapping 9-mers at the reported relaxed threshold: not an OASis percentile, isolated CDR score, or immunogenicity measurement. H3 RMSD uses a per-domain framework N/CA/C backbone fit to deposited experimental coordinates, not the original RFdiffusion model. Loops are operational sequence-alignment/motif definitions, not independently validated biological numbering. Separate domain fits exclude relative VH/VL orientation and cannot establish whole-scFv orientation or interface preservation.'
 LIMIT='Neither overlapping ranges nor a small mean shift establishes structural non-inferiority: a meaningful margin and justified uncertainty analysis are needed. Predicted RMSD does not measure binding. These are draw-weighted designs on two fixed cases, not independent biological experiments or evidence of an antibody-format effect. No p-values, confidence intervals, or causal acceptance are inferred here.'
-ABLATION='Figure 1 is a separate loop-group generation cohort. Bars are mean ensemble-minus-baseline Heavy OASis Identity differences across reported seed-matched pairs; no error bars are implied. The source defines a same-decoder, same-seed zero-AbLang-logit control, but the executed helper revision/import resolution and weights are not authenticated. Thus these are descriptive retained outputs, not proof that AbLang alone caused the changes. Other CDRs means H1/H2 for 9NH7 and H1/H2 + L1/L2/L3 for 9NFU. The 9NFU heavy score is from joint heavy/light redesign, not an isolated heavy-loop intervention. No matched ablation structural results are supplied.'
+ABLATION='Figure 2 uses a separate loop-group generation cohort. Light dots show individual reported seed-pair differences; dark diamonds show the mean and thick lines the middle half (IQR), not confidence intervals. Positive differences favor ensemble sequence similarity. The source defines a same-decoder, same-seed zero-AbLang-logit control, but the executed helper revision/import resolution and weights are not authenticated. Thus these are descriptive retained outputs, not proof that AbLang alone caused the changes. Other CDRs means H1/H2 for 9NH7 and H1/H2 + L1/L2/L3 for 9NFU. The 9NFU heavy score is from joint heavy/light redesign, not an isolated heavy-loop intervention. No matched ablation structural results are supplied.'
 LINKAGE='For the pinned original inputs, prior audit linked scored VH to final-filled FASTAs and full predicted sequences, and replayed the implemented coordinate measurements without numeric discrepancies. This package rechecks the scored-VH/FASTA link and recalculates retained metrics; it does not rerun coordinate replay, folding or BioPhi scoring. Computation verification is distinct from independent biological mapping or causal acceptance.'
 
 
@@ -222,7 +268,7 @@ def publish(root):
         message=f'Update failed: {exc}'
         (root/'READ_RESULTS.md').write_text('# Update failed\n\n'+message+'\n')
         (root/'results.html').write_text('<h1>Update failed</h1><p>'+html.escape(message)+'</p>')
-        for name in ['figure1.png','figure1.svg','9NH7_distributions.png','9NFU_distributions.png']:
+        for name in [f'{name}.{ext}' for name in ('figure1','figure2','experiment_map','9NH7_distributions','9NFU_distributions') for ext in ('png','svg')]:
             (root/'figures'/name).unlink(missing_ok=True)
         for name in ['tables/table1.csv','tables/ablation.csv','tables/loops.csv','engineering/run.json','APPENDIX.md']:
             (root/name).unlink(missing_ok=True)
@@ -233,10 +279,14 @@ def publish(root):
     loops.to_csv(root/'tables/loops.csv',index=False)
     light=ablation[ablation.domain=='L'][['structure','condition','n_pairs','mean_difference','positive','zero']]
     light_note='9NFU light-domain Identity: '+ '; '.join(f"{r.condition}: mean paired gain {r.mean_difference:+.7f}, {r.positive}/{r.n_pairs} positive, {r.zero}/{r.n_pairs} unchanged" for r in light.itertuples())+'. Heavy and light denominators are separate; no cross-chain efficiency inference follows.'
-    fig=plot_ablation(ablation)
-    bar_values=[float(p.get_height()) for ax in fig.axes for p in ax.patches]
-    for ext in ['png','svg']: fig.savefig(root/f'figures/figure1.{ext}',dpi=170,metadata={'Date':None} if ext=='svg' else None)
+    fig=plot_ablation(ablation, data['ablation'])
+    bar_values=[float(line.get_xdata()[0]) for ax in fig.axes for line in ax.lines[1:]]
+    for ext in ['png','svg']: fig.savefig(root/f'figures/figure2.{ext}',dpi=170,metadata={'Date':None} if ext=='svg' else None)
     plt.close(fig)
+    for name, figure in [('figure1',plot_main(data)),('experiment_map',plot_experiment_map(data))]:
+        for ext in ('png','svg'):
+            figure.savefig(root/f'figures/{name}.{ext}',dpi=170,metadata={'Date':None} if ext=='svg' else None)
+        plt.close(figure)
     for st in CASES:
         g=data['main'].query('structure==@st')
         fig,axes=plt.subplots(2,1,figsize=(6.2,6.5),layout='constrained')
@@ -251,11 +301,15 @@ def publish(root):
     link=LINKAGE if data['original_inputs'] else 'Scored VH/FASTA linkage was rechecked, but changed input bytes are not covered by the pinned coordinate audit. Interpretation remains provisional; updating a metric file is not new measurement validation.'
     display=table_display(table)
     n=int(table.humanness_n_per_arm.iloc[0]); pairs=int(ablation.n_pairs.iloc[0]); total=len(data['ablation'])
-    caption=f'Each main cell is a median over {n} designs per arm per case; B = baseline, E = ensemble. Deltas are differences of marginal medians, not paired changes. Higher Identity indicates greater repertoire similarity; higher RMSD indicates greater displacement from the deposited reference.'
+    caption=f'Each main cell is a median over {n} draws per arm per case; B = baseline, E = ensemble. Deltas are differences of marginal medians, not paired changes. Higher Identity indicates greater repertoire similarity; higher RMSD indicates greater displacement from the deposited reference.'
     abcaption=f'{pairs} reported pairs per condition; {total} ablation designs in total. '+ABLATION
-    md='# Repertoire similarity and structural cost\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n## Table 1 · Two objectives, kept distinct\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n'+loop_readout+'\n\n'+SCOPE+'\n\n## What differs between cases?\n\n'+'\n\n'.join(cases)+'\n\n'+LIMIT+'\n\n## Figure 1 · Where does the humanness difference occur?\n\n'+abcaption+'\n\n![Figure 1. Heavy-domain ablation differences](figures/figure1.png)\n\n'+regions+'\n\n'+light_note+'\n\n## Paper changes\n\n'+PAPER_CHANGES+'\n\n## What this evidence supports\n\n'+link+'\n\n[Supporting distributions and alternatives](APPENDIX.md) · [Sources and scientific limits](SOURCES.md) · [Update the analysis](README.md) · [Executed notebook](results.ipynb) · [Engineering checks](engineering/README.md)\n'
+    main_caption=f'Light sequence dots are all {n} observed draws per arm in each case; black ticks mark medians. Structural dots are group medians for every measured loop. Thick lines show the middle half (25th–75th percentiles), not confidence intervals. All draws keep their original weight, including repeated sequences. Baseline and ensemble are separate collections: no row-pairing or connecting designs. Higher Identity means more human-repertoire sequence similarity; lower RMSD means closer to the deposited reference. These are whole heavy-domain scores and domain-local loop distances, not immune-response or binding measurements.'
+    map_caption='Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Arrows show which measurements belong to each collection, not a causal effect.'
+    (root/'AUTHOR_CHECKLIST.md').write_text('# Author checklist — manuscript integration\n\n'+PAPER_CHANGES+'\n\n- [ ] Replace stale values using [Table 1](tables/table1.csv) and [all loops](tables/loops.csv).\n- [ ] Use [Figure 1](figures/figure1.svg) for the main question and [Figure 2](figures/figure2.svg) for the separate ablation.\n- [ ] Keep conventions in [Sources and methods](SOURCES.md); keep the experiment map in the notebook unless the paper needs it.\n- [ ] Review all claims against the qualifications above; notebook completion is not manuscript endorsement.\n')
+    md='# Repertoire similarity and structural cost\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n'+map_caption+'\n\n![Experiment map](figures/experiment_map.png)\n\n## Figure 1 · Sequence similarity and every measured loop\n\n'+main_caption+'\n\n![Figure 1. Main distributions and all-loop comparison](figures/figure1.png)\n\n'+loop_readout+'\n\n## Table 1 · Numerical reference\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n## Figure 2 · Where are differences seen in the separate ablation?\n\n'+abcaption+'\n\n![Figure 2. Reported seed-pair differences](figures/figure2.png)\n\n'+regions+'\n\n'+light_note+'\n\n## What this evidence supports\n\n'+LIMIT+'\n\n'+link+'\n\n[Spread and confidence details](APPENDIX.md) · [Sources and methods](SOURCES.md) · [Update guide](README.md) · [Executed notebook](results.ipynb) · [Author checklist — Paper changes](AUTHOR_CHECKLIST.md) · [Engineering checks](engineering/README.md)\n'
     (root/'READ_RESULTS.md').write_text(md)
     appendix='# Supporting analyses\n\nReturn to [Table 1 and Figure 1](READ_RESULTS.md). These plots show every retained main design; low-confidence designs are not removed. Read ECDFs as the fraction of designs at or below each x-axis value, not uncertainty intervals.\n\n'
+    appendix+='## Spread and confidence by case\n\n'+'\n\n'.join(cases)+'\n\n'+SCOPE+'\n\n'
     appendix+='## Complete selected loop table\n\n'+markdown_table(loops.round(4))+'\n\n'+LOOP_CAPTION+'\n\n[Machine-readable loop table](tables/loops.csv)\n\n'
     appendix+='## Light-domain ablation control\n\n'+markdown_table(light)+'\n\n'+light_note+'\n\n'
     for st in CASES: appendix+=f'## {st}\n\n![{st} all-loop distributions](figures/{st}_distributions.png)\n\n'
@@ -265,8 +319,8 @@ def publish(root):
     def image(name,alt):
         encoded=base64.b64encode((root/'figures'/name).read_bytes()).decode()
         return f'<img alt="{html.escape(alt)}" src="data:image/png;base64,{encoded}">'
-    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+'<h2>Table 1 · Two objectives</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+para(loop_readout)+para(SCOPE)+'<h2>What differs between cases?</h2>'+''.join(para(c) for c in cases)+para(LIMIT)+'<h2>Figure 1 · Where does the difference occur?</h2>'+para(abcaption)+image('figure1.png','Heavy-domain ablation differences')+para(regions)+para(light_note)+'<h2>Paper changes</h2>'+para(PAPER_CHANGES)+'<h2>What this evidence supports</h2>'+para(link)+'<details><summary>Supporting loops, distributions and alternatives</summary><div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+''.join(image(st+'_distributions.png',st+' distributions') for st in CASES)+para('ECDFs include every retained main design. Jacob promb and whole-framework CA results are different endpoints/cohorts, not an alignment-only sensitivity. See APPENDIX.md and SOURCES.md for interpretation.')+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and limits</a> · <a href="results.ipynb">Notebook</a></nav></main>'
+    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+image('figure1.png','Sequence distributions and all-loop structural medians')+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+para(regions)+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
     css='body{margin:0;background:#f7f5ef;color:#192a30;font:17px/1.65 system-ui,sans-serif}header,main{max-width:850px;margin:auto;padding:24px}header{border-bottom:3px solid #287c8e}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12}h2{font-size:1.35rem;margin-top:2em;line-height:1.3}.eyebrow{color:#287c8e;font-size:13px;text-transform:uppercase;letter-spacing:.08em}img{width:100%;height:auto;margin:20px 0}table{border-collapse:collapse;font-size:14px;min-width:650px}td,th{padding:12px;border-bottom:1px solid #bcc9c9;text-align:left}.table-scroll{overflow-x:auto}details{padding:16px;background:#e8efec}summary{cursor:pointer;font-weight:700}a{color:#116779}nav{margin:30px 0}@media(max-width:450px){header,main{padding:18px}body{font-size:16px}}'
     (root/'results.html').write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Repertoire similarity and structural cost</title><style>'+css+'</style></head><body>'+body+'</body></html>')
     (root/'engineering/run.json').write_text(json.dumps({'input_sha256':data['hashes'],'pinned_inputs_unchanged':data['original_inputs'],'main_rows':len(data['main']),'ablation_rows':total,'bar_values_percentage_points':bar_values,'computation':'retained-output summaries; no folding, scoring or coordinate replay'},indent=2)+'\n')
-    return dict(loops=loops,loop_readout=loop_readout,light_note=light_note,readout=answer,cases=cases,regions=regions,table=display,bar_values=bar_values,status=status,caption=caption,ablation_caption=abcaption)
+    return dict(main_caption=main_caption,map_caption=map_caption,loops=loops,loop_readout=loop_readout,light_note=light_note,readout=answer,cases=cases,regions=regions,table=display,bar_values=bar_values,status=status,caption=caption,ablation_caption=abcaption)

@@ -1,16 +1,26 @@
 {
-  "clean_kernel_relocated": "PASS",
-  "byte_equal": {
-    "tables/table1.csv": true,
-    "tables/ablation.csv": true,
-    "tables/loops.csv": true,
-    "figures/figure1.png": true,
-    "READ_RESULTS.md": true,
-    "results.html": true,
-    "analysis.py": true,
-    "selection.csv": true
-  },
-  "tests": "PASS (9 methods)",
-  "new_environment": false,
-  "limit": "Long nested relocation timed out at kernel startup; a short in-package relocation passed. IPC path length is a suspected portability limit, not a scientific-data failure."
+  "status": "PASS",
+  "fresh_kernel": true,
+  "tests": 13,
+  "compared_files": [
+    "APPENDIX.md",
+    "READ_RESULTS.md",
+    "analysis.py",
+    "build_notebook.py",
+    "figures/9NFU_distributions.png",
+    "figures/9NH7_distributions.png",
+    "figures/figure1.png",
+    "figures/figure1.svg",
+    "results.html",
+    "selection.csv",
+    "tables/ablation.csv",
+    "tables/loops.csv",
+    "tables/table1.csv",
+    "figures/figure2.png",
+    "figures/figure2.svg",
+    "figures/experiment_map.png",
+    "figures/experiment_map.svg"
+  ],
+  "byte_mismatches": [],
+  "boundary": "Same installed environment; short nested relocation, not arbitrary-path or independent-environment reproduction."
 }

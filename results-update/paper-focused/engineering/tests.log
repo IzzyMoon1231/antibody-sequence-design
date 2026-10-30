@@ -7,8 +7,12 @@ test_render_real_and_changed_inputs (test_analysis.AnalysisTests.test_render_rea
 test_review_loop_coverage_and_regeneration (test_analysis.AnalysisTests.test_review_loop_coverage_and_regeneration) ... ok
 test_scientific_gates (test_analysis.AnalysisTests.test_scientific_gates) ... ok
 test_unsupported_structure_error_is_specific (test_analysis.AnalysisTests.test_unsupported_structure_error_is_specific) ... ok
+test_ablation_points_are_reported_pairs (test_figures.FigureTests.test_ablation_points_are_reported_pairs) ... ok
+test_main_draws_and_all_loop_quartiles (test_figures.FigureTests.test_main_draws_and_all_loop_quartiles) ... ok
+test_plain_opening_and_notebook_figure_hierarchy (test_figures.FigureTests.test_plain_opening_and_notebook_figure_hierarchy) ... ok
+test_reading_surfaces_prioritize_main_and_separate_checklist (test_figures.FigureTests.test_reading_surfaces_prioritize_main_and_separate_checklist) ... ok
 
 ----------------------------------------------------------------------
-Ran 9 tests in 23.265s
+Ran 13 tests in 29.667s
 
 OK

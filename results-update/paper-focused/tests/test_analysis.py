@@ -33,6 +33,7 @@ class AnalysisTests(unittest.TestCase):
                 np.testing.assert_allclose(ablation[col],expected[col],atol=1e-12,equal_nan=True)
             first=analysis.publish(dest)
             before=(dest/'figures/figure1.png').read_bytes()
+            before_ablation=(dest/'figures/figure2.png').read_bytes()
             before_text=(dest/'READ_RESULTS.md').read_text()
             for st in analysis.CASES:
                 p=dest/f'inputs/{st}_ensemble.xlsx'
@@ -47,6 +48,7 @@ class AnalysisTests(unittest.TestCase):
             a=pd.read_csv(dest/'inputs/ablation_scores.csv'); a['id']=a.id.str.replace('baseline','TEMP').str.replace('ensemble','baseline').str.replace('TEMP','ensemble'); a.to_csv(dest/'inputs/ablation_scores.csv',index=False)
             second=analysis.publish(dest)
             self.assertNotEqual(before,(dest/'figures/figure1.png').read_bytes())
+            self.assertNotEqual(before_ablation,(dest/'figures/figure2.png').read_bytes())
             self.assertNotEqual(before_text,(dest/'READ_RESULTS.md').read_text())
             self.assertIn('lower heavy-domain',second['readout'])
             self.assertIn('lower H3',second['readout'])

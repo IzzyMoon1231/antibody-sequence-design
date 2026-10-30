@@ -1,12 +1,12 @@
 # Read or update these results
 
-**Start with [READ_RESULTS.md](READ_RESULTS.md)** for the answer, one main table and one separate ablation figure. [results.ipynb](results.ipynb) is executed with embedded output. Download `results.html` for a self-contained phone/offline reading view; GitHub shows HTML source, not a hosted website.
+**Start with [READ_RESULTS.md](READ_RESULTS.md)** for the answer, the main-results Figure 1, a numerical reference table and separate ablation Figure 2. [results.ipynb](results.ipynb) is executed with embedded output. Download `results.html` for a self-contained phone/offline reading view; GitHub shows HTML source, not a hosted website.
 
 ## One update route
 
 1. Keep this entire directory together. Open `selection.csv` in a spreadsheet: one row per case/method selects a public BioPhi workbook and its final-filled FASTA. To replace a workbook, copy the replacement into `inputs/` and change that row's relative filename; do the same for its matching FASTA. The structural export is `inputs/cdr_rmsd_results.csv`; the separate ablation export is `inputs/ablation_scores.csv`.
 2. Use Python 3.11 or later with the packages in `requirements.txt`. In an environment where these are not already installed, the optional setup is `python -m pip install -r requirements.txt`. No models, weights or scoring databases are required. No installation was performed to prepare this package.
-3. From this directory, run `python build_notebook.py`. This launches a fresh kernel, regenerates the table, figure, readout, supporting plots and mobile HTML, then saves the executed notebook. Alternatively open `results.ipynb` here and **Restart Kernel and Run All**, then save it. Do not edit generated prose or chart values by hand.
+3. From this directory, run `python build_notebook.py`. This launches a fresh kernel, regenerates both figures, the editable experiment map, table, readout, supporting plots and mobile HTML, then saves the executed notebook. Alternatively open `results.ipynb` here and **Restart Kernel and Run All**, then save it. Do not edit generated prose or chart values by hand.
 
 `python -m unittest discover -s tests -v` runs the portable tests from this directory. The expected tables are frozen checks for the supplied original inputs, not an oracle for your replacement dataset. If deliberate replacement data are used, do not rewrite expected tables merely to make tests pass: review the new cohort/endpoint and archive it separately.
 

@@ -5,9 +5,9 @@ The student-facing result is [READ_RESULTS.md](../READ_RESULTS.md). Engineering 
 ## Executed checks
 
 - `test_analysis.py` compares every numeric Table 1 column to the independently checked retained table, and all numeric ablation summary columns to the checked chain-specific output (tolerance 1e-12). Expected tables are derived from public observations; they contain no manuscript text.
-- The changed-input control edits actual copied workbooks, H3 CSV and ablation CSV. It reverses humanness/structural directions and ablation signs, then checks regenerated prose, HTML, plotted bar heights and image bytes. These mutations are synthetic tests, never presented as observations.
+- The changed-input control edits actual copied workbooks, H3 CSV and ablation CSV. It reverses humanness/structural directions and ablation signs, then checks regenerated prose, HTML, plotted mean values and both main/ablation image bytes. These mutations are synthetic tests, never presented as observations.
 - Missing-input tests invalidate the readers and remove stale figures/tables. Schema and scientific-gate controls cover unsupported atom semantics, unmatched keys, nonfinite values, confidence flags, duplicate/missing ablation pairs, incompatible peptide denominators and sequence mismatch.
-- `build_notebook.py` executes from a new kernel, checks every code cell executed, requires an embedded PNG and rejects error outputs. See [notebook.json](notebook.json).
+- `build_notebook.py` executes from a new kernel, checks every code cell executed, requires three embedded PNGs and rejects error outputs. See [notebook.json](notebook.json).
 - `run.json` records exact selected input hashes and whether they match the original public provenance. No environment dump or machine paths are included.
 
 ## Test-first chronology
@@ -16,13 +16,19 @@ Observed RED before the first implementation: missing portable analysis helper (
 
 The scientific-review correction added a semantic RED for missing complete loop coverage, then a GREEN covering all nine case/loop summaries against original selected rows, corrected narrative on both readers, and changed L2 input propagation. A second RED demonstrated a stale loop table after a missing loop row; GREEN now invalidates all summaries. An initial test launch lacked PYTHONPATH and failed import before the semantic RED; it was a command setup error, not a scientific defect. No new model, scoring or coordinate experiment was performed.
 
+## Final communication pass
+
+Four further vertical slices were observed RED then GREEN: absent main comparison API; mean-only ablation bars rather than reported observations (semantic failure); absent second figure/experiment-map reading surfaces; and an opening/notebook hierarchy that did not meet the plain-language contract. Local raw RED logs are not published because tracebacks contain machine paths. `test_figures.py` compares main observed-point coordinates, all nine loop medians/IQR segments, ablation seed-pair dots and means directly with selected rows, including reversed-sign controls. It checks the experiment map, separated author checklist and invalidation of every figure after missing inputs. Main and ablation image bytes, prose and HTML change with mutated files. Thirteen test methods pass in the final suite.
+
+No new biological or inferential experiments were performed. Main and ablation numeric summary tables retain the preceding checked values. Figure intervals describe observations; none estimates uncertainty. Table 1 and the full loop/ablation tables remain numerical references.
+
 ## Prior coordinate evidence
 
 [prior_coordinate_replay.json](prior_coordinate_replay.json) is an unchanged, small receipt from the preceding coordinate replay. It is deliberately distinguished from this package's newly executed summary regeneration. It records the source/AST/reference hashes, CDR/framework row counts and zero numeric discrepancies. The large PDB collection is not shipped. [SOURCES.md](../SOURCES.md) describes the public paths and replay procedure.
 
 ## Reading-surface checks
 
-The offline HTML was inspected in a local Chromium browser at phone width (390 CSS px) and desktop width. Phone body width equals the viewport; the main table has its own horizontal scroller. Images loaded; the supporting-distribution disclosure expands. Figure 1 and both ECDF plots were visually inspected for labels, units and clipping. This is local-render verification, not a claim about a published GitHub renderer.
+The offline HTML was inspected in a local Chromium browser at phone width (390 CSS px) and desktop width. Phone body width equals the viewport; the main table has its own horizontal scroller. All three main images load; the spread/confidence disclosure has its own table scroller. Main Figure 1, seed-pair Figure 2 and the editable experiment map were inspected at both widths, with no clipping. Screenshot evidence is retained locally, excluded from the public allowlist. This is local-render verification, not a claim about a published GitHub renderer.
 
 ## Workflow for a successor
 
