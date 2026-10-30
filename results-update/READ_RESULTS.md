@@ -1,4 +1,6 @@
-# What do these results actually tell us?
+# Earlier diagnostic view — superseded
+
+**Read the [current scientific analysis](paper-focused/READ_RESULTS.md) or [executed notebook](paper-focused/results.ipynb) instead.** It selects the paper-relevant comparison and explains the trade-off. The blanket unlinked-score warnings below no longer apply to its selected, checked inputs. This earlier view is preserved for history, not the recommended paper narrative.
 
 > **Scores not yet linked to selected sequences. Provide the sequence file used for each score export, its run settings and structural mapping before using these as final paper results.**
 

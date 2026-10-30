@@ -1,0 +1,16 @@
+{
+  "clean_kernel_relocated": "PASS",
+  "byte_equal": {
+    "tables/table1.csv": true,
+    "tables/ablation.csv": true,
+    "tables/loops.csv": true,
+    "figures/figure1.png": true,
+    "READ_RESULTS.md": true,
+    "results.html": true,
+    "analysis.py": true,
+    "selection.csv": true
+  },
+  "tests": "PASS (9 methods)",
+  "new_environment": false,
+  "limit": "Long nested relocation timed out at kernel startup; a short in-package relocation passed. IPC path length is a suspected portability limit, not a scientific-data failure."
+}

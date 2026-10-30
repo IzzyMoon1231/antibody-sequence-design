@@ -1,0 +1,3 @@
+structure,humanness_n_per_arm,biophi_heavy_baseline_median,biophi_heavy_ensemble_median,biophi_heavy_difference_medians,h3_n_per_arm,h3_baseline_median_A,h3_ensemble_median_A,h3_difference_medians_A,interpretation
+9NH7,100,0.5981308411214953,0.8130841121495327,0.2149532710280374,100,0.896,2.2750000000000004,1.3790000000000004,"current exports; conditional protocol comparison, not accepted matched causal result"
+9NFU,100,0.6548672566371682,0.8584070796460177,0.20353982300884954,100,2.939,3.0595,0.12049999999999983,"current exports; conditional protocol comparison, not accepted matched causal result"

@@ -1,0 +1,14 @@
+test_case_interpretation_tracks_tradeoff (test_analysis.AnalysisTests.test_case_interpretation_tracks_tradeoff) ... ok
+test_missing_inputs_invalidate_readers (test_analysis.AnalysisTests.test_missing_inputs_invalidate_readers) ... ok
+test_missing_supporting_loop_invalidates_output (test_analysis.AnalysisTests.test_missing_supporting_loop_invalidates_output) ... ok
+test_notebook_builder_exists (test_analysis.AnalysisTests.test_notebook_builder_exists) ... ok
+test_real_table_matches_checked_arithmetic (test_analysis.AnalysisTests.test_real_table_matches_checked_arithmetic) ... ok
+test_render_real_and_changed_inputs (test_analysis.AnalysisTests.test_render_real_and_changed_inputs) ... ok
+test_review_loop_coverage_and_regeneration (test_analysis.AnalysisTests.test_review_loop_coverage_and_regeneration) ... ok
+test_scientific_gates (test_analysis.AnalysisTests.test_scientific_gates) ... ok
+test_unsupported_structure_error_is_specific (test_analysis.AnalysisTests.test_unsupported_structure_error_is_specific) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 23.265s
+
+OK

@@ -1,0 +1,21 @@
+{
+  "execution": "AST-extracted unchanged native functions and literal constants; only file locations and method selection overridden",
+  "source_sha256": "82e2ef47346cc2e6258a49d1c9e45b1146275a4ecd5e55a9401dc34547ab2cb1",
+  "ast_sha256": "d405f1080ce615271dd191cba75c2b7735c3e96221ec4abca7b882eb8c457788",
+  "Bio": "1.85",
+  "numpy": "1.26.4",
+  "references": {
+    "9NH7": "a5505cb73e8d9a9be1650c1edd0d0d1221fed4b8418948e571f2a52a138b8c9f",
+    "9NFU": "f569a739e6b225895d799750cae9540ee6f2247f96dac920db7d24b56d2bc1b3"
+  },
+  "cdr": {
+    "rows": 1800,
+    "numeric_differences": 0,
+    "examples": []
+  },
+  "framework": {
+    "rows": 600,
+    "numeric_differences": 0,
+    "examples": []
+  }
+}

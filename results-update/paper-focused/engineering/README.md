@@ -1,0 +1,29 @@
+# Engineering verification — not the scientific reading path
+
+The student-facing result is [READ_RESULTS.md](../READ_RESULTS.md). Engineering checks establish computation and artifact behavior, not independent biological or causal acceptance.
+
+## Executed checks
+
+- `test_analysis.py` compares every numeric Table 1 column to the independently checked retained table, and all numeric ablation summary columns to the checked chain-specific output (tolerance 1e-12). Expected tables are derived from public observations; they contain no manuscript text.
+- The changed-input control edits actual copied workbooks, H3 CSV and ablation CSV. It reverses humanness/structural directions and ablation signs, then checks regenerated prose, HTML, plotted bar heights and image bytes. These mutations are synthetic tests, never presented as observations.
+- Missing-input tests invalidate the readers and remove stale figures/tables. Schema and scientific-gate controls cover unsupported atom semantics, unmatched keys, nonfinite values, confidence flags, duplicate/missing ablation pairs, incompatible peptide denominators and sequence mismatch.
+- `build_notebook.py` executes from a new kernel, checks every code cell executed, requires an embedded PNG and rejects error outputs. See [notebook.json](notebook.json).
+- `run.json` records exact selected input hashes and whether they match the original public provenance. No environment dump or machine paths are included.
+
+## Test-first chronology
+
+Observed RED before the first implementation: missing portable analysis helper (API prerequisite). GREEN: real Table 1 agreement. Next RED: missing regeneration/chart interface; GREEN: retained ablation agreement and changed-input-to-artists/image/prose propagation. Later REDs exposed surviving stale table files and a nonspecific missing-column error; the implementation now removes stale tables and names the missing structural column. A separate narrative RED required the data-conditional no-structural-cost qualification. The final suite retains the resulting controls. These are sequential vertical implementation slices, not scientific experiments.
+
+The scientific-review correction added a semantic RED for missing complete loop coverage, then a GREEN covering all nine case/loop summaries against original selected rows, corrected narrative on both readers, and changed L2 input propagation. A second RED demonstrated a stale loop table after a missing loop row; GREEN now invalidates all summaries. An initial test launch lacked PYTHONPATH and failed import before the semantic RED; it was a command setup error, not a scientific defect. No new model, scoring or coordinate experiment was performed.
+
+## Prior coordinate evidence
+
+[prior_coordinate_replay.json](prior_coordinate_replay.json) is an unchanged, small receipt from the preceding coordinate replay. It is deliberately distinguished from this package's newly executed summary regeneration. It records the source/AST/reference hashes, CDR/framework row counts and zero numeric discrepancies. The large PDB collection is not shipped. [SOURCES.md](../SOURCES.md) describes the public paths and replay procedure.
+
+## Reading-surface checks
+
+The offline HTML was inspected in a local Chromium browser at phone width (390 CSS px) and desktop width. Phone body width equals the viewport; the main table has its own horizontal scroller. Images loaded; the supporting-distribution disclosure expands. Figure 1 and both ECDF plots were visually inspected for labels, units and clipping. This is local-render verification, not a claim about a published GitHub renderer.
+
+## Workflow for a successor
+
+Keep science in the tested helper; regenerate every reading surface from the same result objects. Do not patch numerical prose by hand. Check both unchanged-input agreement and deliberately changed-input propagation, then clean-kernel execution and mobile rendering. Keep publication allowlists separate from generated caches and kernel connection files. Review the final allowlist before copying this directory into a public branch.

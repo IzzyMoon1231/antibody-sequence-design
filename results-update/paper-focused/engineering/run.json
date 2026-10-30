@@ -1,0 +1,24 @@
+{
+  "input_sha256": {
+    "inputs/9NH7_baseline.xlsx": "cc939e19d3c66af20eb88d65e5bcaccf5ef81381e8e66900b3c257807210b33a",
+    "inputs/9NH7_ensemble.xlsx": "b1970a99fbaa24d3c7c936e9017ff937426abf3f70a7b33c61d45442857370f5",
+    "inputs/9NFU_baseline.xlsx": "36e553eb1157b94daa9463b2cbe29c9a069b4b0f5a048f6199d161b51322fa9c",
+    "inputs/9NFU_ensemble.xlsx": "e95e4a72d05d3a7212572cbc7ba5eba3fe00d73ff1d82b01389dddf47e8f2b6c",
+    "inputs/9NH7_baseline.fa": "6d9fcac566c414a32d2b86104e052c7ed609dfd98134934127400cace1f539f6",
+    "inputs/9NH7_ensemble.fa": "2fb98adea795fe90a3ff42e29e59c86c45c82874e66a5b2c9a822581ccc8e8b6",
+    "inputs/9NFU_baseline.fa": "36c1fda30494b8d5ff26a782a7013eaf92ec1f20eeba5d3b17bc30fab52faa9c",
+    "inputs/9NFU_ensemble.fa": "24b98a59510fe742a5847d36613a9a2ab5132cc0dae12ac428e84265b0e387b0",
+    "inputs/cdr_rmsd_results.csv": "23d8665e50fa5bc2ddd5cabc1733af393ca1b2254e8b89be8c6048742c6abce6",
+    "inputs/ablation_scores.csv": "611d697b298c68d49f20291b75700b919889eb59cf827131cef5260174142b01"
+  },
+  "pinned_inputs_unchanged": true,
+  "main_rows": 400,
+  "ablation_rows": 800,
+  "bar_values_percentage_points": [
+    5.869158878504673,
+    15.093457943925234,
+    5.54867256637168,
+    8.504424778761061
+  ],
+  "computation": "retained-output summaries; no folding, scoring or coordinate replay"
+}

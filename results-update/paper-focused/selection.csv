@@ -1,0 +1,5 @@
+structure,method,workbook,fasta
+9NH7,baseline,inputs/9NH7_baseline.xlsx,inputs/9NH7_baseline.fa
+9NH7,ensemble,inputs/9NH7_ensemble.xlsx,inputs/9NH7_ensemble.fa
+9NFU,baseline,inputs/9NFU_baseline.xlsx,inputs/9NFU_baseline.fa
+9NFU,ensemble,inputs/9NFU_ensemble.xlsx,inputs/9NFU_ensemble.fa
