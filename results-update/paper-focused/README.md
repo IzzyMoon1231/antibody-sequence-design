@@ -2,6 +2,8 @@
 
 Open **[results.ipynb](results.ipynb)** in local JupyterLab or VS Code. Its saved outputs use the included **real public example**. For reading without Python: [GitHub reader](READ_RESULTS.md), or download `results.html` for a self-contained mobile/offline view (GitHub does not host that HTML).
 
+**Coming from the October 12 handoff?** Read [what is superseded and which files replace it](HANDOFF_UPDATE.md), including the clarification of the old baseline-rejection labels.
+
 ## What changed? What do I rerun?
 
 **This notebook starts from completed local score and structural-metric exports.** It does not generate sequences, run BioPhi, predict structures or measure coordinates. Keep the original example unchanged; put replacements in `inputs/my_run/`.
