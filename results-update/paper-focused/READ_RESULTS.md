@@ -57,7 +57,9 @@ Reported pair counts: 9NFU/cdrh3/H: 100 / 9NFU/cdrh3/L: 100 / 9NFU/others/H: 100
 
 ![Figure 2. Reported seed-pair differences](figures/figure2.png)
 
-9NH7: the mean difference outside H3 is higher than H3-only (+0.15093 versus +0.05869); positive reported pairs: 100/100 versus 100/100. 9NFU: the mean difference outside H3 is higher than H3-only (+0.08504 versus +0.05549); positive reported pairs: 100/100 versus 100/100.
+9NH7: the mean heavy-domain Identity difference (ensemble minus baseline; pp = percentage points) outside H3 is higher than H3-only (+15.09 pp versus +5.87 pp); positive reported pairs: 100/100 versus 100/100.
+
+9NFU: the mean heavy-domain Identity difference (ensemble minus baseline; pp = percentage points) outside H3 is higher than H3-only (+8.50 pp versus +5.55 pp); positive reported pairs: 100/100 versus 100/100.
 
 9NFU light-domain Identity: cdrh3: mean paired gain +0.0000000, 0/100 positive, 100/100 unchanged; others: mean paired gain +0.1403125, 100/100 positive, 0/100 unchanged. Heavy and light denominators are separate; no cross-chain efficiency inference follows.
 

@@ -46,6 +46,49 @@ class FigureTests(unittest.TestCase):
         import matplotlib.pyplot as plt
         plt.close('all')
 
+    def test_ablation_shared_dynamic_limits(self):
+        data=analysis.load(ROOT)
+        observations=data['ablation'].copy()
+        for extreme in (None, -1., 1., 0.):
+            if extreme is not None:
+                observations.loc[:, 'Heavy OASis Identity']=0.
+                mask=(observations.structure=='9NFU') & (observations.method=='ensemble')
+                observations.loc[mask, 'Heavy OASis Identity']=abs(extreme)
+                if extreme < 0:
+                    observations['method']=observations.method.map({'baseline':'ensemble','ensemble':'baseline'})
+            fig=analysis.plot_ablation(analysis.summarize(data)[1], observations)
+            fig.canvas.draw()
+            lo,hi=fig.axes[0].get_xlim()
+            self.assertLess(lo, 0)
+            self.assertGreater(hi, 0)
+            for ax in fig.axes:
+                np.testing.assert_allclose(ax.get_xlim(), (lo,hi))
+                np.testing.assert_allclose(ax.get_xticks(), fig.axes[0].get_xticks())
+                for collection in ax.collections[::2]:
+                    values=collection.get_offsets()[:,0]
+                    self.assertTrue(np.all(values > lo) and np.all(values < hi))
+            import matplotlib.pyplot as plt
+            plt.close(fig)
+
+    def test_ablation_readout_percentage_points_and_case_paragraphs(self):
+        data=analysis.load(ROOT)
+        for reverse in (False, True):
+            if reverse:
+                data['ablation']['method']=data['ablation'].method.map({'baseline':'ensemble','ensemble':'baseline'})
+            table,ablation=analysis.summarize(data)
+            text=analysis.describe(data,table,ablation)[2]
+            self.assertIn('percentage points',text)
+            paragraphs=text.split('\n\n')
+            self.assertEqual(len(paragraphs),len(analysis.CASES))
+            for st,paragraph in zip(analysis.CASES,paragraphs):
+                self.assertTrue(paragraph.startswith(st+':'))
+                self.assertIn('ensemble minus baseline',paragraph)
+                for condition in ('others','cdrh3'):
+                    rows=data['ablation'].query('structure==@st and condition==@condition')
+                    means=rows.groupby('method')['Heavy OASis Identity'].mean()
+                    expected=100*(means['ensemble']-means['baseline'])
+                    self.assertIn(f'{expected:+.2f} pp',paragraph)
+
     def test_reading_surfaces_prioritize_main_and_separate_checklist(self):
         import tempfile, shutil
         with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
@@ -63,6 +106,7 @@ class FigureTests(unittest.TestCase):
                 self.assertIn('AUTHOR_CHECKLIST.md',text)
                 self.assertNotIn('## Paper changes',text)
                 self.assertIn('not confidence intervals',text)
+            self.assertIn('<p>9NFU: the mean heavy-domain Identity difference', (dest/'results.html').read_text())
             self.assertIn('index-paired Wilcoxon',(dest/'AUTHOR_CHECKLIST.md').read_text())
             self.assertIn('Main comparison',(dest/'figures/experiment_map.svg').read_text())
             (dest/'inputs/ablation_scores.csv').unlink()

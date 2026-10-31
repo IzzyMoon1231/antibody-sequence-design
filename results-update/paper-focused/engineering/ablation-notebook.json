@@ -1,0 +1,10 @@
+{
+  "clean_kernel": "PASS",
+  "executed_code_cells": 18,
+  "embedded_png_outputs": 6,
+  "error_outputs": 0,
+  "analysis_export_enabled": false,
+  "fixed_files_unchanged": 16,
+  "table_comparison": "all retained columns equal at 1e-12; original bytes untouched",
+  "computed_prose": "**Computed observations:** 9NH7: the mean heavy-domain Identity difference (ensemble minus baseline; pp = percentage points) outside H3 is higher than H3-only (+15.09 pp versus +5.87 pp); positive reported pairs: 100/100 versus 100/100.\n\n9NFU: the mean heavy-domain Identity difference (ensemble minus baseline; pp = percentage points) outside H3 is higher than H3-only (+8.50 pp versus +5.55 pp); positive reported pairs: 100/100 versus 100/100."
+}

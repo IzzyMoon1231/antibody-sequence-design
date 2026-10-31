@@ -73,7 +73,7 @@ def describe(data, table, ablation):
             continue
         h=ablation[(ablation.structure==t.structure)&(ablation.domain=='H')].set_index('condition')
         comparison=direction(h.loc['others','mean_difference']-h.loc['cdrh3','mean_difference'])
-        regions.append(f"{t.structure}: the mean difference outside H3 is {comparison} than H3-only ({h.loc['others','mean_difference']:+.5f} versus {h.loc['cdrh3','mean_difference']:+.5f}); positive reported pairs: {int(h.loc['others','positive'])}/{int(h.loc['others','n_pairs'])} versus {int(h.loc['cdrh3','positive'])}/{int(h.loc['cdrh3','n_pairs'])}.")
+        regions.append(f"{t.structure}: the mean heavy-domain Identity difference (ensemble minus baseline; pp = percentage points) outside H3 is {comparison} than H3-only ({100*h.loc['others','mean_difference']:+.2f} pp versus {100*h.loc['cdrh3','mean_difference']:+.2f} pp); positive reported pairs: {int(h.loc['others','positive'])}/{int(h.loc['others','n_pairs'])} versus {int(h.loc['cdrh3','positive'])}/{int(h.loc['cdrh3','n_pairs'])}.")
     if (table.h3_difference_medians_A > 1e-12).any():
         answers.append('The retained median pattern does not support a blanket no-structural-cost claim; the structural shift must be read case by case, alongside spread and confidence.')
         if (table.h3_difference_medians_A > 1e-12).all():
@@ -83,7 +83,7 @@ def describe(data, table, ablation):
                 answers.append(f'The H3 median increase is larger for {largest.structure} ({largest.h3_difference_medians_A:+.4f} Å) than {smallest.structure} ({smallest.h3_difference_medians_A:+.4f} Å); this is an observed scale difference, not a biological-significance threshold.')
     else:
         answers.append('H3 medians do not increase in these inputs; this alone does not establish structural preservation or non-inferiority.')
-    return ' '.join(answers),cases,' '.join(regions)
+    return ' '.join(answers),cases,'\n\n'.join(regions)
 
 
 def loop_summary(data):
@@ -207,7 +207,10 @@ def panel_readout(data, case, metric):
 def plot_ablation(ablation, observations):
     import matplotlib.pyplot as plt
     plt.rcParams.update({'font.size':14,'svg.hashsalt':'uirj-paper-focused','svg.fonttype':'none'})
-    fig,axes=plt.subplots(2,1,figsize=(6.2,6.5),layout='constrained')
+    # Shared autoscaling unions every selected pair and the zero reference;
+    # padding stays dynamic when replacement inputs change the range.
+    fig,axes=plt.subplots(2,1,figsize=(6.2,6.5),layout='constrained',sharex=True)
+    for ax in axes: ax.tick_params(axis='x',labelbottom=True)
     if observations.empty:
         for ax in axes: ax.axis('off')
         axes[0].text(.05,.5,'Ablation not selected — no comparison computed',fontsize=12)
@@ -314,7 +317,7 @@ def publish(root, data=None):
     def image(name,alt):
         encoded=base64.b64encode((root/'figures'/name).read_bytes()).decode()
         return f'<img alt="{html.escape(alt)}" src="data:image/png;base64,{encoded}">'
-    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+''.join('<h3>'+st+' · '+metric+'</h3>'+image(f'{st}_{metric}.png',f'{st}_{metric}')+para(panel_readout(data,st,metric)) for st in CASES for metric in ('similarity','structure'))+'<p><a href="figures/figure1.svg">Download compact 2×2 Figure 1 (SVG)</a> · <a href="figures/figure1.png">PNG</a></p>'+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+para(regions)+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
+    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+''.join('<h3>'+st+' · '+metric+'</h3>'+image(f'{st}_{metric}.png',f'{st}_{metric}')+para(panel_readout(data,st,metric)) for st in CASES for metric in ('similarity','structure'))+'<p><a href="figures/figure1.svg">Download compact 2×2 Figure 1 (SVG)</a> · <a href="figures/figure1.png">PNG</a></p>'+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+''.join(para(region) for region in regions.split('\n\n'))+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
     css='body{margin:0;background:#f7f5ef;color:#192a30;font:17px/1.65 system-ui,sans-serif}header,main{max-width:850px;margin:auto;padding:24px}header{border-bottom:3px solid #287c8e}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12}h2{font-size:1.35rem;margin-top:2em;line-height:1.3}.eyebrow{color:#287c8e;font-size:13px;text-transform:uppercase;letter-spacing:.08em}img{width:100%;height:auto;margin:20px 0}table{border-collapse:collapse;font-size:14px;min-width:650px}td,th{padding:12px;border-bottom:1px solid #bcc9c9;text-align:left}.table-scroll{overflow-x:auto}details{padding:16px;background:#e8efec}summary{cursor:pointer;font-weight:700}a{color:#116779}nav{margin:30px 0}@media(max-width:450px){header,main{padding:18px}body{font-size:16px}}'
     (root/'results.html').write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Repertoire similarity and structural cost</title><style>'+css+'</style></head><body>'+body+'</body></html>')
     (root/'engineering/run.json').write_text(json.dumps({'input_sha256':data['hashes'],'pinned_inputs_unchanged':data['original_inputs'],'main_rows':len(data['main']),'ablation_rows':total,'bar_values_percentage_points':bar_values,'computation':'retained-output summaries; no folding, scoring or coordinate replay'},indent=2)+'\n')
