@@ -1,0 +1,20 @@
+{
+  "results.ipynb": {
+    "seconds": 2.2,
+    "executed_code_cells": 22,
+    "embedded_png": 6,
+    "errors": 0,
+    "stats_enabled": false,
+    "exports_enabled": false
+  },
+  "results-exploratory.ipynb": {
+    "seconds": 5.7,
+    "executed_code_cells": 22,
+    "embedded_png": 6,
+    "errors": 0,
+    "stats_enabled": true,
+    "exports_enabled": false
+  },
+  "main_tables_figures_byte_unchanged": true,
+  "helper_source_sha256": "8aadc786bc688acda32daa22552cd213f2de551472fb25fd9850e2b8abe3f8c0"
+}

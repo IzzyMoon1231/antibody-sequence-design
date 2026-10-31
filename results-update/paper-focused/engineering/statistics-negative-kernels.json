@@ -1,0 +1,7 @@
+{
+  "relocated_actual_export_cell": "PASS; 4 comparisons, 4 associations, 22 candidate memberships; reduced verification budgets",
+  "actual_export_preserves_history": "PASS",
+  "missing_receipt_fresh_kernel": "PASS; associations and candidate adjustments withheld",
+  "changed_measurement_fresh_kernel": "PASS; changed effects, correlations withheld",
+  "missing_measurement_row_fresh_kernel": "PASS; validation stops before statistics"
+}
