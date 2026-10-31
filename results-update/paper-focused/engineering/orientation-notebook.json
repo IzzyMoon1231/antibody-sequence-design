@@ -1,0 +1,10 @@
+{
+  "clean_kernel": "PASS",
+  "executed_code_cells": 19,
+  "embedded_png_outputs": 6,
+  "error_outputs": 0,
+  "analysis_export_enabled": false,
+  "fixed_files_unchanged": 16,
+  "table_comparison": "all retained columns equal at 1e-12; original bytes untouched",
+  "orientation_words": 260
+}

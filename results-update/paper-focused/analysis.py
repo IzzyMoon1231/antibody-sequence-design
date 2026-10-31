@@ -234,14 +234,32 @@ def plot_ablation(ablation, observations):
 
 def plot_experiment_map(data):
     import matplotlib.pyplot as plt
-    fig,ax=plt.subplots(figsize=(6.2,5.2),layout='constrained')
-    ax.set(xlim=(0,1),ylim=(0,1)); ax.axis('off')
+    # Two independent cards: no pipeline or causal connector between cohorts.
+    fig,axes=plt.subplots(2,1,figsize=(5.4,4.3))
+    fig.subplots_adjust(left=.02,right=.98,bottom=.02,top=.98,hspace=.08)
     n=len(data['main']); a=len(data['ablation'])
-    for y,title,source,out in [(.96,'Main comparison',f'All-loop redesign · {n} draws total\nBaseline and ensemble: separate collections','Heavy-domain similarity + loop RMSD\nCompare groups, not row-matched designs'),(.45,'Separate ablation',f'H3-only or other-loop redesign · {a} draws\nBaseline and ensemble: reported seed pairs','Heavy/light similarity, scored separately\nNo structural ablation measurements')]:
-        ax.text(.03,y,title,fontsize=14,weight='bold',va='top')
-        ax.text(.5,y-.13,source,ha='center',va='center',fontsize=11,bbox=dict(boxstyle='round,pad=.7',fc='#e9f1f2',ec='#287c8e'))
-        ax.annotate('',xy=(.5,y-.27),xytext=(.5,y-.21),arrowprops=dict(arrowstyle='->',color='#287c8e',lw=1.5))
-        ax.text(.5,y-.33,out,ha='center',va='center',fontsize=11)
+    cards=[('Main comparison', f'{n} draws · all-loop redesign', [
+        'Question: more similar, at what structural cost?',
+        'Compare: baseline vs ensemble, in each case',
+        'Measure: heavy Identity + every loop’s RMSD',
+        'Contrast: unpaired group medians and spread']),
+        ('Separate ablation', f'{a} draws · separate cohort' if a else 'not selected', [
+        'Question: where do similarity differences appear?',
+        'Compare: baseline vs ensemble within loop group',
+        'Measure: heavy / light Identity separately',
+        'Contrast: reported seed-pair differences',
+        'H3 only vs other loops; no main-cohort pairing',
+        'No structural ablation measurements'] if a else [
+        'No ablation comparison computed.',
+        'Select a compatible ablation file to include it.',
+        'No structural ablation inference.'])]
+    for ax,(title,count,lines),color,bg in zip(axes,cards,COLORS,('#eaf3f4','#faf0e9')):
+        ax.set(xlim=(0,1),ylim=(0,1),xticks=[],yticks=[],facecolor=bg)
+        for spine in ax.spines.values(): spine.set_visible(False)
+        ax.text(.035,.94,title,fontsize=16,weight='bold',color=color,va='top')
+        ax.text(.035,.79,count,fontsize=13,weight='bold',va='top')
+        for i,line in enumerate(lines):
+            ax.text(.035,.63-i*.105,line,fontsize=13,va='top')
     return fig
 
 
@@ -252,6 +270,25 @@ def table_display(table):
 def markdown_table(df):
     return '| '+' | '.join(df.columns)+' |\n| '+' | '.join(['---']*len(df.columns))+' |\n'+'\n'.join('| '+' | '.join(map(str,row))+' |' for row in df.itertuples(index=False,name=None))
 
+
+ORIENTATION = '''## Before you start
+
+**Research question:** can adding an antibody language model make redesigned sequences more like human antibodies, and what happens to their predicted structures? Here **baseline** means ProteinMPNN alone; **ensemble** combines ProteinMPNN with AbLang. These labels describe protocols, not proof that AbLang alone caused a difference.
+
+The two examples are **9NH7**, a heavy-only antibody domain, and **9NFU**, a linked heavy/light antibody fragment. They are two fixed cases, not biological replications or a representative antibody population. Many generated sequences (draws) from each case do not change that limit.
+
+**Words used below**
+
+- **Heavy / light (VH / VL):** the two kinds of antibody variable domain, the regions that help recognize a target.
+- **VHH / scFv:** VHH is a heavy-only variable domain; an scFv joins VH and VL with a linker in one chain.
+- **CDR / H3:** CDRs are variable loops involved in target recognition; H3 is the third heavy-domain loop. H1/H2 and L1/L2/L3 name the others.
+- **BioPhi / OASis Identity:** the scoring tool and its human-repertoire similarity measure; here, the fraction of qualifying short sequence windows across the heavy domain. Higher is more similar, not proof of reduced immunogenicity.
+- **RMSD (Å):** aligned backbone displacement from a reference, in ångströms. Lower is closer; predicted structure is not a binding test.
+- **pLDDT:** prediction confidence (0–100), not experimental validation.
+- **Ablation:** a separate controlled-change comparison, here redesigning H3 only or other loops. Its similarity scores do not establish structural preservation.
+
+Read the main comparison first; the separate ablation asks where similarity differences appear, not whether the main designs bind their target.
+'''
 
 QUESTION='Are the sequences more human-like, and what happens to their predicted structures?'
 SCOPE='Table 1 compares independently sampled all-loop baseline and ensemble protocol cohorts, not paired seeds. Heavy OASis Identity is the whole numbered heavy-domain fraction of qualifying overlapping 9-mers at the reported relaxed threshold: not an OASis percentile, isolated CDR score, or immunogenicity measurement. H3 RMSD uses a per-domain framework N/CA/C backbone fit to deposited experimental coordinates, not the original RFdiffusion model. Loops are operational sequence-alignment/motif definitions, not independently validated biological numbering. Separate domain fits exclude relative VH/VL orientation and cannot establish whole-scFv orientation or interface preservation.'
@@ -302,9 +339,9 @@ def publish(root, data=None):
     caption=f'Each main cell is a marginal median; selected draw counts: {n}; B = baseline, E = ensemble. Deltas are differences of marginal medians, not paired changes. Higher Identity indicates greater repertoire similarity; higher RMSD indicates greater displacement from the deposited reference.'
     abcaption=f'Reported pair counts: {pairs}; {total} ablation designs in total. '+ABLATION
     main_caption=f'Light sequence dots retain all observed draws ({n}); black ticks mark medians. Structural dots are group medians for every measured loop. Thick lines show the middle half (25th–75th percentiles), not confidence intervals. All draws keep their original weight, including repeated sequences. Baseline and ensemble are separate collections: no row-pairing or connecting designs. Higher Identity means more human-repertoire sequence similarity; lower RMSD means closer to the deposited reference. These are whole heavy-domain scores and domain-local loop distances, not immune-response or binding measurements.'
-    map_caption='Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Arrows show which measurements belong to each collection, not a causal effect.'
+    map_caption='Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Cards show each question, measurement and comparison; neither is a stage of the other.'
     (root/'AUTHOR_CHECKLIST.md').write_text('# Author checklist — manuscript integration\n\n'+PAPER_CHANGES+'\n\n- [ ] Replace stale values using [Table 1](tables/table1.csv) and [all loops](tables/loops.csv).\n- [ ] Use [Figure 1](figures/figure1.svg) for the main question and [Figure 2](figures/figure2.svg) for the separate ablation.\n- [ ] Keep conventions in [Sources and methods](SOURCES.md); keep the experiment map in the notebook unless the paper needs it.\n- [ ] Review all claims against the qualifications above; notebook completion is not manuscript endorsement.\n')
-    md='# Repertoire similarity and structural cost\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n'+map_caption+'\n\n![Experiment map](figures/experiment_map.png)\n\n## Figure 1 · Sequence similarity and every measured loop\n\n'+main_caption+'\n\n'+''.join(f'### {st} · {metric}\n\n![{st} {metric}](figures/{st}_{metric}.png)\n\n'+panel_readout(data,st,metric)+'\n\n' for st in CASES for metric in ('similarity','structure'))+'[Download compact 2×2 Figure 1 (SVG)](figures/figure1.svg) · [PNG](figures/figure1.png)\n\n'+loop_readout+'\n\n## Table 1 · Numerical reference\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n## Figure 2 · Where are differences seen in the separate ablation?\n\n'+abcaption+'\n\n![Figure 2. Reported seed-pair differences](figures/figure2.png)\n\n'+regions+'\n\n'+light_note+'\n\n## What this evidence supports\n\n'+LIMIT+'\n\n'+link+'\n\n[Spread and confidence details](APPENDIX.md) · [Sources and methods](SOURCES.md) · [Update guide](README.md) · [Executed notebook](results.ipynb) · [Author checklist — Paper changes](AUTHOR_CHECKLIST.md) · [Engineering checks](engineering/README.md)\n'
+    md='# Repertoire similarity and structural cost\n\n'+ORIENTATION+'\n\n'+f'## {QUESTION}\n\n'+answer+'\n\n'+status+'\n\n'+map_caption+'\n\n![Experiment map](figures/experiment_map.png)\n\n## Figure 1 · Sequence similarity and every measured loop\n\n'+main_caption+'\n\n'+''.join(f'### {st} · {metric}\n\n![{st} {metric}](figures/{st}_{metric}.png)\n\n'+panel_readout(data,st,metric)+'\n\n' for st in CASES for metric in ('similarity','structure'))+'[Download compact 2×2 Figure 1 (SVG)](figures/figure1.svg) · [PNG](figures/figure1.png)\n\n'+loop_readout+'\n\n## Table 1 · Numerical reference\n\n'+markdown_table(display)+'\n\n'+caption+'\n\n## Figure 2 · Where are differences seen in the separate ablation?\n\n'+abcaption+'\n\n![Figure 2. Reported seed-pair differences](figures/figure2.png)\n\n'+regions+'\n\n'+light_note+'\n\n## What this evidence supports\n\n'+LIMIT+'\n\n'+link+'\n\n[Spread and confidence details](APPENDIX.md) · [Sources and methods](SOURCES.md) · [Update guide](README.md) · [Executed notebook](results.ipynb) · [Author checklist — Paper changes](AUTHOR_CHECKLIST.md) · [Engineering checks](engineering/README.md)\n'
     (root/'READ_RESULTS.md').write_text(md)
     appendix='# Supporting analyses\n\nReturn to [Table 1 and Figure 1](READ_RESULTS.md). These plots show every retained main design; low-confidence designs are not removed. Read ECDFs as the fraction of designs at or below each x-axis value, not uncertainty intervals.\n\n'
     appendix+='## Spread and confidence by case\n\n'+'\n\n'.join(cases)+'\n\n'+SCOPE+'\n\n'
@@ -317,8 +354,17 @@ def publish(root, data=None):
     def image(name,alt):
         encoded=base64.b64encode((root/'figures'/name).read_bytes()).decode()
         return f'<img alt="{html.escape(alt)}" src="data:image/png;base64,{encoded}">'
-    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main><h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+''.join('<h3>'+st+' · '+metric+'</h3>'+image(f'{st}_{metric}.png',f'{st}_{metric}')+para(panel_readout(data,st,metric)) for st in CASES for metric in ('similarity','structure'))+'<p><a href="figures/figure1.svg">Download compact 2×2 Figure 1 (SVG)</a> · <a href="figures/figure1.png">PNG</a></p>'+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+''.join(para(region) for region in regions.split('\n\n'))+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
-    css='body{margin:0;background:#f7f5ef;color:#192a30;font:17px/1.65 system-ui,sans-serif}header,main{max-width:850px;margin:auto;padding:24px}header{border-bottom:3px solid #287c8e}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12}h2{font-size:1.35rem;margin-top:2em;line-height:1.3}.eyebrow{color:#287c8e;font-size:13px;text-transform:uppercase;letter-spacing:.08em}img{width:100%;height:auto;margin:20px 0}table{border-collapse:collapse;font-size:14px;min-width:650px}td,th{padding:12px;border-bottom:1px solid #bcc9c9;text-align:left}.table-scroll{overflow-x:auto}details{padding:16px;background:#e8efec}summary{cursor:pointer;font-weight:700}a{color:#116779}nav{margin:30px 0}@media(max-width:450px){header,main{padding:18px}body{font-size:16px}}'
+    orientation_html='<section aria-label="Before you start">'
+    for block in ORIENTATION.strip().split('\n\n'):
+        if block.startswith('## '):
+            orientation_html+='<h2>'+html.escape(block[3:])+'</h2>'
+        elif block.startswith('- '):
+            orientation_html+='<ul>'+''.join('<li>'+html.escape(line[2:]).replace('**','')+'</li>' for line in block.splitlines())+'</ul>'
+        else:
+            orientation_html+=para(block)
+    orientation_html+='</section>'
+    body='<header><p class="eyebrow">UIRJ · retained computational results</p><h1>Repertoire similarity and structural cost</h1></header><main>'+orientation_html+'<h2>'+html.escape(QUESTION)+'</h2>'+para(answer)+para(status)+para(map_caption)+image('experiment_map.png','Two separate experiment collections')+'<h2>Figure 1 · Main comparison</h2>'+para(main_caption)+''.join('<h3>'+st+' · '+metric+'</h3>'+image(f'{st}_{metric}.png',f'{st}_{metric}')+para(panel_readout(data,st,metric)) for st in CASES for metric in ('similarity','structure'))+'<p><a href="figures/figure1.svg">Download compact 2×2 Figure 1 (SVG)</a> · <a href="figures/figure1.png">PNG</a></p>'+para(loop_readout)+'<h2>Table 1 · Numerical reference</h2><div class="table-scroll" tabindex="0">'+display.to_html(index=False,border=0)+'</div>'+para(caption)+'<h2>Figure 2 · Separate ablation</h2>'+para(abcaption)+image('figure2.png','Reported seed-pair differences, means and IQR')+''.join(para(region) for region in regions.split('\n\n'))+para(light_note)+'<h2>What this evidence supports</h2>'+para(LIMIT)+para(link)+'<details><summary>Spread, confidence and complete loop table</summary>'+''.join(para(c) for c in cases)+'<div class="table-scroll">'+loops.round(4).to_html(index=False,border=0)+'</div>'+para(LOOP_CAPTION)+'</details><nav><a href="README.md">Update guide</a> · <a href="SOURCES.md">Sources and methods</a> · <a href="APPENDIX.md">Supporting results</a> · <a href="results.ipynb">Notebook</a> · <a href="AUTHOR_CHECKLIST.md">Author checklist — Paper changes</a></nav></main>'
+    css='body{margin:0;background:#f7f5ef;color:#192a30;font:17px/1.65 system-ui,sans-serif}header,main{max-width:850px;margin:auto;padding:24px}header{border-bottom:3px solid #287c8e}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.12}h2{font-size:1.35rem;margin-top:2em;line-height:1.3}.eyebrow{color:#287c8e;font-size:13px;text-transform:uppercase;letter-spacing:.08em}img{width:100%;height:auto;margin:20px 0}img[alt="Two separate experiment collections"]{max-width:540px;display:block}table{border-collapse:collapse;font-size:14px;min-width:650px}td,th{padding:12px;border-bottom:1px solid #bcc9c9;text-align:left}.table-scroll{overflow-x:auto}details{padding:16px;background:#e8efec}summary{cursor:pointer;font-weight:700}a{color:#116779}nav{margin:30px 0}@media(max-width:450px){header,main{padding:18px}body{font-size:16px}}'
     (root/'results.html').write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Repertoire similarity and structural cost</title><style>'+css+'</style></head><body>'+body+'</body></html>')
     (root/'engineering/run.json').write_text(json.dumps({'input_sha256':data['hashes'],'pinned_inputs_unchanged':data['original_inputs'],'main_rows':len(data['main']),'ablation_rows':total,'bar_values_percentage_points':bar_values,'computation':'retained-output summaries; no folding, scoring or coordinate replay'},indent=2)+'\n')
     return dict(main_caption=main_caption,map_caption=map_caption,loops=loops,loop_readout=loop_readout,light_note=light_note,readout=answer,cases=cases,regions=regions,table=display,bar_values=bar_values,status=status,caption=caption,ablation_caption=abcaption)

@@ -2,7 +2,13 @@
 
 The student-facing result is [READ_RESULTS.md](../READ_RESULTS.md). Engineering checks establish computation and artifact behavior, not independent biological or causal acceptance.
 
-## Current four-panel revision
+## Current orientation and experiment-map revision
+
+A shared 260-word “Before you start” section introduces the question, protocols, two-case scope and glossary before inputs/results. Two independent map cards show questions, comparisons, measurements and contrasts; counts follow the validated data and omitted ablation is explicit. The notebook draws this map immediately after validation, never from saved images. The guide separates input changes from upstream rescoring/refolding and distinguishes descriptive outputs from unimplemented inferential analyses.
+
+Current receipts: [orientation-notebook.json](orientation-notebook.json), [orientation-suite-green.log](orientation-suite-green.log). All 29 tests pass (25 retained plus four new regression methods); the fresh kernel executes 19 code cells, six figures, no errors, export off. Original input/table/expected CSV bytes remain unchanged. Earlier receipts below are historical. Local reader opening/map inspected at 1200px desktop and 390px phone widths; map renders at 540×430 and 354×282 CSS pixels respectively, with no page overflow. Exact notebook cells/output were also inspected in a local HTML preview, not native Jupyter or GitHub rendering. `nbconvert` was unavailable; no package was installed. Maintainer refresh and screenshot artifacts remain private.
+
+## Previous four-panel revision
 
 The main notebook now has four separately executed case/metric figures and local, data-derived captions. The combined manuscript export is 2×2, using the exact same `draw_panel` helper. `tests/test_panels.py` compares actual collection offsets, interval segments, colors, median lines, labels and limits; checks case/letter titles; mutates structural range and similarity; and checks notebook cell separation plus both reader/export surfaces. Existing numerical, provenance, missing-input, ablation, non-overwriting export and fresh-kernel synthetic controls remain.
 

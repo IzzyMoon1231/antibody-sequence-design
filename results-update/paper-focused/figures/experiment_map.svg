@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="446.4pt" height="374.4pt" viewBox="0 0 446.4 374.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="388.8pt" height="309.6pt" viewBox="0 0 388.8 309.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
@@ -20,79 +20,77 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 374.4 
-L 446.4 374.4 
-L 446.4 0 
+   <path d="M 0 309.6 
+L 388.8 309.6 
+L 388.8 0 
 L 0 0 
 z
 " style="fill: #ffffff"/>
   </g>
   <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 7.776 149.084308 
+L 381.024 149.084308 
+L 381.024 6.192 
+L 7.776 6.192 
+z
+" style="fill: #eaf3f4"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
    <g id="text_1">
-    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="16.212226" y="28.374033" transform="rotate(-0 16.212226 28.374033)">Main comparison</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #287c8e" x="20.83968" y="26.923038" transform="rotate(-0 20.83968 26.923038)">Main comparison</text>
    </g>
    <g id="text_2">
-    <g id="patch_2">
-     <path d="M 100.270703 86.531166 
-L 346.129297 86.531166 
-Q 353.829297 86.531166 353.829297 78.831166 
-L 353.829297 52.425151 
-Q 353.829297 44.725151 346.129297 44.725151 
-L 100.270703 44.725151 
-Q 92.570703 44.725151 92.570703 52.425151 
-L 92.570703 78.831166 
-Q 92.570703 86.531166 100.270703 86.531166 
-z
-" style="fill: #e9f1f2; stroke: #287c8e; stroke-linejoin: miter"/>
-    </g>
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(128.828594 61.884506)">All-loop redesign · 400 draws total</text>
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(100.270703 75.087514)">Baseline and ensemble: separate collections</text>
-   </g>
-   <g id="patch_3">
-    <path d="M 223.2 97.099515 
-Q 223.2 106.152955 223.2 113.529344 
-" style="fill: none; stroke: #287c8e; stroke-width: 1.5; stroke-linecap: round"/>
-    <path d="M 226 107.929344 
-L 223.2 113.529344 
-L 220.4 107.929344 
-" style="fill: none; stroke: #287c8e; stroke-width: 1.5; stroke-linecap: round"/>
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="46.077353" transform="rotate(-0 20.83968 46.077353)">400 draws · all-loop redesign</text>
    </g>
    <g id="text_3">
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(118.290078 135.56441)">Heavy-domain similarity + loop RMSD</text>
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(104.296016 148.767418)">Compare groups, not row-matched designs</text>
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="68.940123" transform="rotate(-0 20.83968 68.940123)">Question: more similar, at what structural cost?</text>
    </g>
    <g id="text_4">
-    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="16.212226" y="216.257789" transform="rotate(-0 16.212226 216.257789)">Separate ablation</text>
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="83.943815" transform="rotate(-0 20.83968 83.943815)">Compare: baseline vs ensemble, in each case</text>
    </g>
    <g id="text_5">
-    <g id="patch_4">
-     <path d="M 101.744531 274.414921 
-L 344.655469 274.414921 
-Q 352.355469 274.414921 352.355469 266.714921 
-L 352.355469 240.308906 
-Q 352.355469 232.608906 344.655469 232.608906 
-L 101.744531 232.608906 
-Q 94.044531 232.608906 94.044531 240.308906 
-L 94.044531 266.714921 
-Q 94.044531 274.414921 101.744531 274.414921 
-z
-" style="fill: #e9f1f2; stroke: #287c8e; stroke-linejoin: miter"/>
-    </g>
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(105.191484 249.768261)">H3-only or other-loop redesign · 800 draws</text>
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(101.744531 262.971269)">Baseline and ensemble: reported seed pairs</text>
-   </g>
-   <g id="patch_5">
-    <path d="M 223.2 284.98327 
-Q 223.2 294.03671 223.2 301.413099 
-" style="fill: none; stroke: #287c8e; stroke-width: 1.5; stroke-linecap: round"/>
-    <path d="M 226 295.813099 
-L 223.2 301.413099 
-L 220.4 295.813099 
-" style="fill: none; stroke: #287c8e; stroke-width: 1.5; stroke-linecap: round"/>
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="98.947507" transform="rotate(-0 20.83968 98.947507)">Measure: heavy Identity + every loop’s RMSD</text>
    </g>
    <g id="text_6">
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(112.050156 323.448165)">Heavy/light similarity, scored separately</text>
-    <text style="font-size: 11px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif" transform="translate(120.351719 336.651173)">No structural ablation measurements</text>
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="113.9512" transform="rotate(-0 20.83968 113.9512)">Contrast: unpaired group medians and spread</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_3">
+    <path d="M 7.776 303.408 
+L 381.024 303.408 
+L 381.024 160.515692 
+L 7.776 160.515692 
+z
+" style="fill: #faf0e9"/>
+   </g>
+   <g id="matplotlib.axis_3"/>
+   <g id="matplotlib.axis_4"/>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 16px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #bc643f" x="20.83968" y="181.246731" transform="rotate(-0 20.83968 181.246731)">Separate ablation</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="200.401046" transform="rotate(-0 20.83968 200.401046)">800 draws · separate cohort</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="223.263815" transform="rotate(-0 20.83968 223.263815)">Question: where do similarity differences appear?</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="238.267507" transform="rotate(-0 20.83968 238.267507)">Compare: baseline vs ensemble within loop group</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="253.2712" transform="rotate(-0 20.83968 253.2712)">Measure: heavy / light Identity separately</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="268.274892" transform="rotate(-0 20.83968 268.274892)">Contrast: reported seed-pair differences</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="283.278584" transform="rotate(-0 20.83968 283.278584)">H3 only vs other loops; no main-cohort pairing</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="20.83968" y="298.282276" transform="rotate(-0 20.83968 298.282276)">No structural ablation measurements</text>
    </g>
   </g>
  </g>

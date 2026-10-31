@@ -2,6 +2,19 @@
 
 Open **[results.ipynb](results.ipynb)** in local JupyterLab or VS Code. Its saved outputs use the included **real public example**. For reading without Python: [GitHub reader](READ_RESULTS.md), or download `results.html` for a self-contained mobile/offline view (GitHub does not host that HTML).
 
+## What changed? What do I rerun?
+
+**This notebook starts from completed local score and structural-metric exports.** It does not generate sequences, run BioPhi, predict structures or measure coordinates. Keep the original example unchanged; put replacements in `inputs/my_run/`.
+
+| What changed | Required process |
+|---|---|
+| Compatible OASis scores or structural-metric exports | Copy the new exports and their matching FASTAs, update a copy of `selection.csv` and the notebook selectors, then **Restart Kernel and Run All** with `EXPORT = False`. Inspect validation counts, figures and interpretations; complete the notes before opting into a new export folder. Follow the numbered first-run instructions below. |
+| Baseline or ensemble sequences | First arrange upstream **rescoring** and **refolding / structural-metric regeneration**, or establish that existing measurements belong to those exact sequences under the same documented protocol. Do not attach stale scores or structures to new sequences or merely rename IDs. Obtain matching workbook, FASTA and loop-metric exports from the producing pipeline, then follow the notebook route above. Computational validation alone cannot authenticate how an upstream metric was produced. |
+| A new ablation run | Obtain that run’s own scored outputs with complete reported seed partners in the supported schema. Select its ablation CSV separately; do not combine it with the main design cohorts or borrow their structural measurements. Restart/run all, check pair counts and differences, then export if appropriate. Use `ABLATION = None` to omit it explicitly. |
+| Manuscript formatting only | No scientific rerun is needed. Use the checked outputs for the selected dataset; changing layout is not permission to change values or claims. |
+
+**Statistics boundary:** this notebook regenerates descriptive summaries and figures only. It does **not** regenerate Mann–Whitney tests, inferential effect-size analyses, within-case/method score–RMSD correlations, or multiplicity corrections. Those earlier project requests remain separate analyses requiring their own agreed design and verified scripts; notebook completion does not mean all project statistics are complete. Confirm the current upstream pipeline and statistical procedure with their owner rather than guessing commands.
+
 ## Reading the four main panels
 
 The notebook and readers show **9NH7 similarity → 9NH7 structure → 9NFU similarity → 9NFU structure**, each followed by a caption calculated from the selected frames and a reflection question. The four plotting cells call `analysis.plot_panel(data, case, metric)` directly; no saved image is loaded. Colors are baseline teal and ensemble rust. Comparable panels share x limits; structural limits include the full range across both selected cases, so changed inputs cannot silently clip plotted intervals. Identity retains its meaningful 0–1 scale with padding at the endpoints.
@@ -38,7 +51,13 @@ Opt-in exports include `9NH7_similarity`, `9NH7_structure`, `9NFU_similarity`, a
 
 For the **included example only**: the 9NH7 ensemble heavy-domain similarity median is higher, but its H3 RMSD median is also higher. This supports a descriptive trade-off in these retained predictions, not preserved binding. For your own run, supply the actual medians, direction, counts and an unfavorable or heterogeneous result. A hypothesis about the cause needs separate evidence; do not ask AI to certify a scientific conclusion. Ask your mentor about a new metric, reference, case or statistical design.
 
-## Supported schema — a compatible-result reader, not arbitrary-data analysis
+## What is checked
+
+Validation checks scored VH against its indexed FASTA record, unique structural keys, complete loop coverage, supported domains and three backbone atoms per residue. Scores, RMSD and pLDDT must be finite and within their supported ranges; confidence flags must match mean loop pLDDT below 70. Ablation partners join by **reported seed**, never row order. Main-arm counts may differ; no minimum of 100 is imposed. The schema below gives the exact fields and rules.
+
+If validation fails, stop and correct the named source export or path, clear old outputs, then restart from input selection. Do not delete difficult rows or fill missing measurements. Passing establishes computational compatibility, not scientific endorsement or authenticated experimental provenance.
+
+### Supported schema — a compatible-result reader, not arbitrary-data analysis
 
 The two fixed cases **9NH7 and 9NFU** and the named endpoint definitions remain mandatory. Sample counts are **any positive number**, including unequal main-arm counts; small counts have weak descriptive coverage and do not create biological replication. All loops within one arm must cover exactly its scored designs. No resampling, pairing, confidence filtering, deduplication or inferential test is introduced automatically.
 

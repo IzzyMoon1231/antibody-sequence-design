@@ -1,12 +1,31 @@
 # Repertoire similarity and structural cost
 
+## Before you start
+
+**Research question:** can adding an antibody language model make redesigned sequences more like human antibodies, and what happens to their predicted structures? Here **baseline** means ProteinMPNN alone; **ensemble** combines ProteinMPNN with AbLang. These labels describe protocols, not proof that AbLang alone caused a difference.
+
+The two examples are **9NH7**, a heavy-only antibody domain, and **9NFU**, a linked heavy/light antibody fragment. They are two fixed cases, not biological replications or a representative antibody population. Many generated sequences (draws) from each case do not change that limit.
+
+**Words used below**
+
+- **Heavy / light (VH / VL):** the two kinds of antibody variable domain, the regions that help recognize a target.
+- **VHH / scFv:** VHH is a heavy-only variable domain; an scFv joins VH and VL with a linker in one chain.
+- **CDR / H3:** CDRs are variable loops involved in target recognition; H3 is the third heavy-domain loop. H1/H2 and L1/L2/L3 name the others.
+- **BioPhi / OASis Identity:** the scoring tool and its human-repertoire similarity measure; here, the fraction of qualifying short sequence windows across the heavy domain. Higher is more similar, not proof of reduced immunogenicity.
+- **RMSD (Å):** aligned backbone displacement from a reference, in ångströms. Lower is closer; predicted structure is not a binding test.
+- **pLDDT:** prediction confidence (0–100), not experimental validation.
+- **Ablation:** a separate controlled-change comparison, here redesigning H3 only or other loops. Its similarity scores do not establish structural preservation.
+
+Read the main comparison first; the separate ablation asks where similarity differences appear, not whether the main designs bind their target.
+
+
 ## Are the sequences more human-like, and what happens to their predicted structures?
 
 Ensemble sequences score higher on human-antibody sequence similarity in both examples (whole heavy-domain medians). 9NH7: higher heavy-domain repertoire similarity and higher H3 backbone RMSD in the ensemble median. 9NFU: higher heavy-domain repertoire similarity and higher H3 backbone RMSD in the ensemble median. The retained median pattern does not support a blanket no-structural-cost claim; the structural shift must be read case by case, alongside spread and confidence. The H3 median increase is larger for 9NH7 (+1.3790 Å) than 9NFU (+0.1205 Å); this is an observed scale difference, not a biological-significance threshold.
 
 Pinned retained-input analysis
 
-Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Arrows show which measurements belong to each collection, not a causal effect.
+Two questions, two separate collections. Main comparison: all-loop redesign, sequence similarity and predicted structure. Ablation: H3-only versus other-loop redesign, sequence similarity only. Cards show each question, measurement and comparison; neither is a stage of the other.
 
 ![Experiment map](figures/experiment_map.png)
 
